@@ -8,6 +8,12 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(),
+    // A short paragraph shown on the home page.
+    intro: z.string().optional(),
+    // true gives the project its own page at /projects/<file-name>/, built from the text below the frontmatter.
+    caseStudy: z.boolean().default(false),
+    // Optional: the main pieces of the system, listed on the project page.
+    parts: z.array(z.object({ name: z.string(), does: z.string() })).default([]),
     // Lower numbers show first.
     order: z.number().default(100),
     // The featured project gets the wide panel at the top. Use it for one project.

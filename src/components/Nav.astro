@@ -8,10 +8,10 @@ import { withBase } from '../lib/url';
   <a class="nav__name" href={withBase('/')}>{site.name}</a>
   <nav aria-label="Sections">
     <ul class="nav__links">
-      <li><a href="#work">Work</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href={withBase('/#work')}>Work</a></li>
+      <li><a href={withBase('/#projects')}>Projects</a></li>
+      <li><a href={withBase('/#skills')}>Skills</a></li>
+      <li><a href={withBase('/#contact')}>Contact</a></li>
     </ul>
   </nav>
   <a class="btn nav__resume" href={withBase(site.resume)} download={site.resumeFileName}>

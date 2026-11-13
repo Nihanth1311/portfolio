@@ -56,6 +56,19 @@ flowLabel: What the steps are  # optional
 An optional paragraph or two about the project.
 ```
 
+### Give a project its own page
+
+Add `caseStudy: true` to the project's frontmatter and write the story below the `---` in
+markdown (`## Headings`, paragraphs, lists, and `> quotes` for takeaways). The page appears at
+`/projects/<file-name>/` and the home page links to it. `intro:` is the short paragraph shown
+on the home page; `parts:` is an optional list of `name` / `does` pairs shown beside the story.
+
+### The link preview image
+
+`public/og.png` is the picture shown when the site's link is pasted into LinkedIn or WhatsApp.
+It is a screenshot of the `/og/` page. If you change your headline or photo, open
+`http://localhost:4321/portfolio/og/`, take a 1200x630 screenshot and save it over `public/og.png`.
+
 Set `draft: true` to hide a project or job without deleting its file.
 
 ### Add a job

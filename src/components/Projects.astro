@@ -1,11 +1,12 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
+import { withBase } from '../lib/url';
 import Icon from './Icon.astro';
 
 const all = (await getCollection('projects', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
-const withBody = await Promise.all(all.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
-const featured = withBody.find(({ entry }) => entry.data.featured);
-const rest = withBody.filter((p) => p !== featured);
+const featured = all.find((entry) => entry.data.featured);
+const rest = all.filter((entry) => entry !== featured);
+const pageFor = (id: string) => withBase(`/projects/${id}/`);
 ---
 
 <section class="band" id="projects">
@@ -20,31 +21,30 @@ const rest = withBody.filter((p) => p !== featured);
         featured && (
           <article class="lead">
             <div class="lead__main">
-              <h3>{featured.entry.data.title}</h3>
-              <p class="lead__summary">{featured.entry.data.summary}</p>
-              <div class="lead__body">
-                <featured.Content />
-              </div>
+              <h3>{featured.data.title}</h3>
+              <p class="lead__summary">{featured.data.summary}</p>
+              {featured.data.intro && <p class="lead__body">{featured.data.intro}</p>}
               <div class="lead__actions">
-                {featured.entry.data.link && (
-                  <a class="btn lead__btn" href={featured.entry.data.link} target="_blank" rel="noopener">
-                    {featured.entry.data.linkLabel ?? 'Open the live app'}
+                {featured.data.link && (
+                  <a class="btn lead__btn" href={featured.data.link} target="_blank" rel="noopener">
+                    {featured.data.linkLabel ?? 'Open the live app'}
                     <Icon name="external" />
                   </a>
                 )}
-                {featured.entry.data.repo && (
-                  <a href={featured.entry.data.repo} target="_blank" rel="noopener">
+                {featured.data.caseStudy && <a href={pageFor(featured.id)}>Read how I built it</a>}
+                {featured.data.repo && (
+                  <a href={featured.data.repo} target="_blank" rel="noopener">
                     Source code
                   </a>
                 )}
               </div>
-              {featured.entry.data.note && <p class="lead__note">{featured.entry.data.note}</p>}
+              {featured.data.note && <p class="lead__note">{featured.data.note}</p>}
             </div>
-            {featured.entry.data.flow.length > 0 && (
+            {featured.data.flow.length > 0 && (
               <div class="flow">
-                {featured.entry.data.flowLabel && <p class="flow__label">{featured.entry.data.flowLabel}</p>}
+                {featured.data.flowLabel && <p class="flow__label">{featured.data.flowLabel}</p>}
                 <ol class="flow__steps">
-                  {featured.entry.data.flow.map((step) => (
+                  {featured.data.flow.map((step) => (
                     <li>{step}</li>
                   ))}
                 </ol>
@@ -52,13 +52,13 @@ const rest = withBody.filter((p) => p !== featured);
             )}
             <div class="lead__side">
               <ul class="points">
-                {featured.entry.data.highlights.map((h) => (
+                {featured.data.highlights.map((h) => (
                   <li>{h}</li>
                 ))}
               </ul>
-              {featured.entry.data.stack.length > 0 && (
+              {featured.data.stack.length > 0 && (
                 <p class="stack">
-                  <span>Built with</span> {featured.entry.data.stack.join(', ')}
+                  <span>Built with</span> {featured.data.stack.join(', ')}
                 </p>
               )}
             </div>
@@ -68,11 +68,11 @@ const rest = withBody.filter((p) => p !== featured);
 
       <div class="more">
         {
-          rest.map(({ entry, Content }) => (
+          rest.map((entry) => (
             <article class="project">
               <h3>{entry.data.title}</h3>
               <p class="project__summary">{entry.data.summary}</p>
-              <Content />
+              {entry.data.intro && <p>{entry.data.intro}</p>}
               <ul class="points">
                 {entry.data.highlights.map((h) => (
                   <li>{h}</li>
@@ -83,8 +83,9 @@ const rest = withBody.filter((p) => p !== featured);
                   <span>Built with</span> {entry.data.stack.join(', ')}
                 </p>
               )}
-              {(entry.data.link || entry.data.repo) && (
+              {(entry.data.link || entry.data.repo || entry.data.caseStudy) && (
                 <p class="project__links">
+                  {entry.data.caseStudy && <a href={pageFor(entry.id)}>Read how I built it</a>}
                   {entry.data.link && (
                     <a href={entry.data.link} target="_blank" rel="noopener">
                       {entry.data.linkLabel ?? 'Open the live app'}
