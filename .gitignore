@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+
+# Third-party Claude skills are local tooling, not part of the site
+.claude/skills/

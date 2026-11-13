@@ -1,0 +1,254 @@
+---
+import { getCollection, render } from 'astro:content';
+import Icon from './Icon.astro';
+
+const all = (await getCollection('projects', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+const withBody = await Promise.all(all.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
+const featured = withBody.find(({ entry }) => entry.data.featured);
+const rest = withBody.filter((p) => p !== featured);
+---
+
+<section class="band" id="projects">
+  <div class="wrap band__grid">
+    <div class="band__head">
+      <h2>Things I’ve built</h2>
+    </div>
+
+    <div class="projects">
+      {
+        featured && (
+          <article class="lead">
+            <div class="lead__main">
+              <h3>{featured.entry.data.title}</h3>
+              <p class="lead__summary">{featured.entry.data.summary}</p>
+              <div class="lead__body">
+                <featured.Content />
+              </div>
+              <div class="lead__actions">
+                {featured.entry.data.link && (
+                  <a class="btn lead__btn" href={featured.entry.data.link} target="_blank" rel="noopener">
+                    {featured.entry.data.linkLabel ?? 'Open the live app'}
+                    <Icon name="external" />
+                  </a>
+                )}
+                {featured.entry.data.repo && (
+                  <a href={featured.entry.data.repo} target="_blank" rel="noopener">
+                    Source code
+                  </a>
+                )}
+              </div>
+              {featured.entry.data.note && <p class="lead__note">{featured.entry.data.note}</p>}
+            </div>
+            <div class="lead__side">
+              <ul class="points">
+                {featured.entry.data.highlights.map((h) => (
+                  <li>{h}</li>
+                ))}
+              </ul>
+              {featured.entry.data.stack.length > 0 && (
+                <p class="stack">
+                  <span>Built with</span> {featured.entry.data.stack.join(', ')}
+                </p>
+              )}
+            </div>
+          </article>
+        )
+      }
+
+      <div class="more">
+        {
+          rest.map(({ entry, Content }) => (
+            <article class="project">
+              <h3>{entry.data.title}</h3>
+              <p class="project__summary">{entry.data.summary}</p>
+              <Content />
+              <ul class="points">
+                {entry.data.highlights.map((h) => (
+                  <li>{h}</li>
+                ))}
+              </ul>
+              {entry.data.stack.length > 0 && (
+                <p class="stack">
+                  <span>Built with</span> {entry.data.stack.join(', ')}
+                </p>
+              )}
+              {(entry.data.link || entry.data.repo) && (
+                <p class="project__links">
+                  {entry.data.link && (
+                    <a href={entry.data.link} target="_blank" rel="noopener">
+                      {entry.data.linkLabel ?? 'Open the live app'}
+                    </a>
+                  )}
+                  {entry.data.repo && (
+                    <a href={entry.data.repo} target="_blank" rel="noopener">
+                      Source code
+                    </a>
+                  )}
+                </p>
+              )}
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  h3 {
+    font-size: var(--step-3);
+  }
+
+  /* The live project sits on the dark square. */
+  .lead {
+    display: grid;
+    gap: 2.25rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    background: var(--deep);
+    color: var(--on-deep);
+    border-radius: 4px;
+  }
+
+  .lead ::selection {
+    background: var(--amber);
+    color: var(--ink);
+  }
+
+  .lead__summary {
+    margin-top: 0.6rem;
+    font-size: var(--step-1);
+    font-weight: 550;
+    font-stretch: 92%;
+    line-height: 1.3;
+    max-width: 30ch;
+  }
+
+  .lead__body {
+    margin-top: 1.1rem;
+    color: var(--on-deep-2);
+    max-width: 52ch;
+  }
+
+  .lead__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 1.75rem;
+  }
+
+  .lead__btn {
+    --btn-bg: var(--amber);
+    --btn-edge: var(--amber);
+    --btn-fg: var(--ink);
+  }
+
+  @media (hover: hover) {
+    .lead__btn:hover {
+      --btn-bg: var(--on-deep);
+      --btn-edge: var(--on-deep);
+      --btn-fg: var(--ink);
+    }
+  }
+
+  .lead :global(:focus-visible) {
+    outline-color: var(--amber);
+  }
+
+  .lead__note {
+    margin-top: 0.9rem;
+    font-size: var(--step--1);
+    color: var(--on-deep-2);
+  }
+
+  .lead__side {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--rule-deep);
+  }
+
+  .lead .points li::before {
+    background: var(--amber);
+  }
+
+  .lead .stack span {
+    color: var(--on-deep-2);
+  }
+
+  .points {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .points li {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+
+  .points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.42rem;
+    height: 0.42rem;
+    background: var(--green);
+  }
+
+  .stack span {
+    color: var(--ink-2);
+  }
+
+  .more {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .project {
+    display: grid;
+    gap: 1.1rem;
+    align-content: start;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .project h3 {
+    font-size: var(--step-2);
+  }
+
+  .project__summary {
+    margin-top: -0.6rem;
+    font-weight: 550;
+  }
+
+  .project__links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 50rem) {
+    .lead {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 3rem;
+    }
+
+    .lead__side {
+      padding-top: 0.4rem;
+      padding-left: 2.5rem;
+      border-top: 0;
+      border-left: 1px solid var(--rule-deep);
+    }
+
+    .more {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 3rem;
+    }
+  }
+</style>

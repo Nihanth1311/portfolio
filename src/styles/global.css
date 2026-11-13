@@ -1,0 +1,248 @@
+/*
+  Design tokens.
+  Palette comes from a tournament chess board (deep green and pale squares)
+  and from the red/amber/green status language of risk tooling.
+  Type is Anek Latin, a variable family from Ek Type in India. The width axis
+  does the work: condensed for display, normal for reading.
+*/
+:root {
+  --paper: oklch(0.965 0.012 150);
+  --paper-2: oklch(0.935 0.02 150);
+  --ink: oklch(0.23 0.035 158);
+  --ink-2: oklch(0.41 0.035 158);
+  --rule: oklch(0.85 0.028 152);
+  --green: oklch(0.46 0.105 152);
+  --green-strong: oklch(0.38 0.09 154);
+  --deep: oklch(0.27 0.055 158);
+  --on-deep: oklch(0.955 0.018 150);
+  --on-deep-2: oklch(0.82 0.045 150);
+  --rule-deep: oklch(0.4 0.06 156);
+  --amber: oklch(0.8 0.15 78);
+  --amber-ink: oklch(0.47 0.1 70);
+
+  --font: 'Anek Latin Variable', 'Avenir Next', 'Segoe UI', sans-serif;
+
+  --step--1: 0.9rem;
+  --step-0: 1.125rem;
+  --step-1: 1.35rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+  --step-5: clamp(2.6rem, 0.9rem + 7.6vw, 6rem);
+
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --max: 76rem;
+  --section: clamp(4.5rem, 10vw, 8.5rem);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scrollbar-color: var(--green) var(--paper-2);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--step-0);
+  font-weight: 400;
+  font-stretch: 100%;
+  line-height: 1.55;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--green);
+  color: var(--on-deep);
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 650;
+  font-stretch: 80%;
+  line-height: 1.05;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in oklch, currentColor 45%, transparent);
+  transition: text-decoration-color 160ms ease;
+}
+
+@media (hover: hover) {
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+code {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--paper-2);
+  padding: 0.08em 0.32em;
+  border-radius: 3px;
+}
+
+svg {
+  flex: none;
+}
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: 0.5rem;
+  z-index: 10;
+  padding: 0.5rem 0.9rem;
+  background: var(--deep);
+  color: var(--on-deep);
+  transform: translateY(-200%);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+/* Buttons: squared, like a board square. Two kinds only. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  min-height: 2.9rem;
+  padding: 0.55rem 1.1rem;
+  border: 1.5px solid var(--btn-edge, var(--ink));
+  border-radius: 3px;
+  background: var(--btn-bg, transparent);
+  color: var(--btn-fg, var(--ink));
+  font: inherit;
+  font-weight: 550;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 120ms var(--ease-out);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--solid {
+  --btn-bg: var(--green-strong);
+  --btn-edge: var(--green-strong);
+  --btn-fg: var(--on-deep);
+}
+
+@media (hover: hover) {
+  .btn:hover {
+    --btn-bg: var(--ink);
+    --btn-edge: var(--ink);
+    --btn-fg: var(--paper);
+  }
+}
+
+.btn[disabled] {
+  cursor: default;
+  opacity: 0.55;
+}
+
+/* Section scaffold: heading in a narrow left column, content on the right. */
+.band {
+  padding-block: var(--section);
+  border-top: 1px solid var(--rule);
+}
+
+.band__grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 62rem) {
+  .band__grid {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: 3rem;
+  }
+
+  .band__head {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

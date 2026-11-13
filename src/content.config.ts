@@ -1,0 +1,41 @@
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+
+// One markdown file per project in src/content/projects/.
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string(),
+    // Lower numbers show first.
+    order: z.number().default(100),
+    // The featured project gets the wide panel at the top. Use it for one project.
+    featured: z.boolean().default(false),
+    stack: z.array(z.string()).default([]),
+    highlights: z.array(z.string()).default([]),
+    link: z.url().optional(),
+    linkLabel: z.string().optional(),
+    repo: z.url().optional(),
+    note: z.string().optional(),
+    // Set to true to keep a file in the folder without showing it.
+    draft: z.boolean().default(false),
+  }),
+});
+
+// One markdown file per role in src/content/experience/.
+const experience = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/experience' }),
+  schema: z.object({
+    company: z.string(),
+    role: z.string(),
+    team: z.string().optional(),
+    location: z.string(),
+    // Year and month, for example "2026-08". Leave `end` out for a current role.
+    start: z.string().regex(/^\d{4}-\d{2}$/),
+    end: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, experience };

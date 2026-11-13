@@ -1,0 +1,65 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<header class="nav wrap">
+  <a class="nav__name" href="/">{site.name}</a>
+  <nav aria-label="Sections">
+    <ul class="nav__links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <a class="btn nav__resume" href={site.resume} download={site.resumeFileName}>
+    <Icon name="download" />
+    Résumé
+  </a>
+</header>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-block: 1.25rem;
+  }
+
+  .nav__name {
+    margin-right: auto;
+    font-weight: 650;
+    font-stretch: 85%;
+    font-size: var(--step-1);
+    text-decoration: none;
+    letter-spacing: -0.005em;
+  }
+
+  .nav__links {
+    display: none;
+    gap: 1.75rem;
+  }
+
+  .nav__links a {
+    text-decoration-color: transparent;
+    padding-block: 0.6rem;
+  }
+
+  @media (hover: hover) {
+    .nav__links a:hover {
+      text-decoration-color: currentColor;
+    }
+  }
+
+  .nav__resume {
+    min-height: 2.6rem;
+    padding-block: 0.4rem;
+  }
+
+  @media (min-width: 48rem) {
+    .nav__links {
+      display: flex;
+    }
+  }
+</style>

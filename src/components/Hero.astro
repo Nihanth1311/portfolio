@@ -1,0 +1,98 @@
+---
+import { site } from '../data/site';
+import Trace from './Trace.astro';
+import Icon from './Icon.astro';
+---
+
+<section class="hero wrap">
+  <h1 class="hero__title">
+    {
+      site.headline.map((line, i) => (
+        <span class="hero__line" style={`--i:${i}`}>
+          <span>{line}</span>
+        </span>
+      ))
+    }
+  </h1>
+
+  <div class="hero__lede">
+    <p>{site.intro}</p>
+    <div class="hero__actions">
+      <a class="btn btn--solid" href={`mailto:${site.email}`}>
+        <Icon name="mail" />
+        Email me
+      </a>
+      <a class="btn" href="#projects">See what I’ve built</a>
+    </div>
+  </div>
+
+  <div class="hero__trace">
+    <Trace />
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(2.5rem, 7vw, 6rem) var(--section);
+  }
+
+  .hero__title {
+    font-size: var(--step-5);
+    font-weight: 700;
+    font-stretch: 76%;
+    line-height: 0.96;
+    letter-spacing: -0.015em;
+    text-wrap: initial;
+  }
+
+  /* Each line rises out of its own clip, one after the other. */
+  .hero__line {
+    display: block;
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+    padding-bottom: 0.06em;
+  }
+
+  .hero__line > span {
+    display: block;
+    text-wrap: balance;
+    animation: rise 900ms var(--ease-out) both;
+    animation-delay: calc(var(--i) * 110ms + 60ms);
+  }
+
+  @keyframes rise {
+    from {
+      transform: translateY(105%);
+    }
+  }
+
+  .hero__lede {
+    display: grid;
+    gap: 1.75rem;
+    margin-top: clamp(1.75rem, 4vw, 3rem);
+    max-width: 38rem;
+    animation: settle 700ms ease-out 380ms both;
+  }
+
+  .hero__lede p {
+    font-size: var(--step-1);
+    line-height: 1.45;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .hero__trace {
+    margin-top: clamp(3.5rem, 8vw, 6.5rem);
+    animation: settle 700ms ease-out 520ms both;
+  }
+
+  @keyframes settle {
+    from {
+      opacity: 0;
+    }
+  }
+</style>

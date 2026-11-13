@@ -1,0 +1,125 @@
+---
+import { getCollection, render } from 'astro:content';
+
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmt = (ym?: string) => {
+  if (!ym) return 'Present';
+  const [y, m] = ym.split('-');
+  return `${months[Number(m) - 1]} ${y}`;
+};
+
+const entries = (await getCollection('experience', ({ data }) => !data.draft)).sort((a, b) =>
+  b.data.start.localeCompare(a.data.start),
+);
+const roles = await Promise.all(entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })));
+---
+
+<section class="band" id="work">
+  <div class="wrap band__grid">
+    <div class="band__head">
+      <h2>Where I’ve worked</h2>
+    </div>
+
+    <ol class="roles">
+      {
+        roles.map(({ entry, Content }) => (
+          <li class="role">
+            <p class="role__when">
+              <time datetime={entry.data.start}>{fmt(entry.data.start)}</time> to{' '}
+              {entry.data.end ? <time datetime={entry.data.end}>{fmt(entry.data.end)}</time> : 'now'}
+            </p>
+            <div class="role__what">
+              <h3>{entry.data.role}</h3>
+              <p class="role__where">
+                {entry.data.company}
+                {entry.data.team && <>, {entry.data.team}</>}
+                <span>{entry.data.location}</span>
+              </p>
+              <div class="role__body">
+                <Content />
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .roles {
+    display: grid;
+  }
+
+  .role {
+    display: grid;
+    gap: 0.5rem 2rem;
+    padding-block: 2.25rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .role:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .role:last-child {
+    padding-bottom: 0;
+  }
+
+  .role__when {
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .role h3 {
+    font-size: var(--step-2);
+  }
+
+  .role__where {
+    margin-top: 0.4rem;
+    font-weight: 550;
+  }
+
+  .role__where span {
+    font-weight: 400;
+    color: var(--ink-2);
+    margin-left: 0.6em;
+  }
+
+  .role__body {
+    margin-top: 1.1rem;
+    max-width: 64ch;
+  }
+
+  .role__body :global(ul) {
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .role__body :global(li) {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+
+  /* A small square, the size of one board square at this scale. */
+  .role__body :global(li)::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 0.42rem;
+    height: 0.42rem;
+    background: var(--green);
+  }
+
+  @media (min-width: 44rem) {
+    .role {
+      grid-template-columns: 10.5rem minmax(0, 1fr);
+    }
+
+    .role__when {
+      padding-top: 0.35rem;
+    }
+  }
+</style>
