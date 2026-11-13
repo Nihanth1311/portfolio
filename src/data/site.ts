@@ -19,6 +19,8 @@ export const site = {
     'I’m Nihanth, a full-stack engineer at Solytics Partners in Pune. I work on MRM Vault, a model risk management platform used by financial institutions, with Django and PostgreSQL behind the API and React in front of it.',
   // Shown in the contact section. Set to '' to hide it.
   availability: 'Open to full-stack engineering roles.',
+  // The line you work by, shown in its own band under the hero. Set to '' to hide it.
+  quote: 'You don’t have to know everything, but you should adapt quickly.',
   description:
     'Nihanth Baratam is a full-stack software engineer in Pune, India, working with Django, PostgreSQL and React.',
 };
