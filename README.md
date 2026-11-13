@@ -9,7 +9,12 @@ npm install
 npm run dev
 ```
 
-Then open http://localhost:4321. `npm run build` writes the finished site to `dist/`.
+Then open http://localhost:4321/portfolio/. `npm run build` writes the finished site to `dist/`.
+
+## Deploy
+
+Every push to `main` rebuilds and publishes the site to GitHub Pages at
+https://nihanth1311.github.io/portfolio/ (see `.github/workflows/deploy.yml`).
 
 ## Update your content
 

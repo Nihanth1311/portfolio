@@ -1,10 +1,11 @@
 ---
 import { site } from '../data/site';
 import Icon from './Icon.astro';
+import { withBase } from '../lib/url';
 ---
 
 <header class="nav wrap">
-  <a class="nav__name" href="/">{site.name}</a>
+  <a class="nav__name" href={withBase('/')}>{site.name}</a>
   <nav aria-label="Sections">
     <ul class="nav__links">
       <li><a href="#work">Work</a></li>
@@ -13,7 +14,7 @@ import Icon from './Icon.astro';
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
-  <a class="btn nav__resume" href={site.resume} download={site.resumeFileName}>
+  <a class="btn nav__resume" href={withBase(site.resume)} download={site.resumeFileName}>
     <Icon name="download" />
     Résumé
   </a>

@@ -2,6 +2,7 @@
 import '@fontsource-variable/anek-latin/wdth.css';
 import '../styles/global.css';
 import { site } from '../data/site';
+import { withBase } from '../lib/url';
 
 interface Props {
   title?: string;
@@ -20,7 +21,9 @@ const { title = `${site.name}, ${site.role.toLowerCase()}` } = Astro.props;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={site.description} />
     <meta property="og:type" content="website" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    {Astro.site && <link rel="canonical" href={new URL(withBase('/'), Astro.site)} />}
+    {Astro.site && <meta property="og:url" content={new URL(withBase('/'), Astro.site)} />}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
