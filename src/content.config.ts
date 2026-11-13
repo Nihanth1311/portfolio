@@ -18,6 +18,9 @@ const projects = defineCollection({
     linkLabel: z.string().optional(),
     repo: z.url().optional(),
     note: z.string().optional(),
+    // Optional: an ordered set of steps, drawn as a row. Use only for a real sequence.
+    flow: z.array(z.string()).default([]),
+    flowLabel: z.string().optional(),
     // Set to true to keep a file in the folder without showing it.
     draft: z.boolean().default(false),
   }),
@@ -34,6 +37,7 @@ const experience = defineCollection({
     // Year and month, for example "2026-08". Leave `end` out for a current role.
     start: z.string().regex(/^\d{4}-\d{2}$/),
     end: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+    stack: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 });

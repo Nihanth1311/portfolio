@@ -4,6 +4,7 @@ role: Associate Software Engineer, Full-Stack
 team: MRM Vault
 location: Pune, India
 start: "2026-08"
+stack: [Django, Django REST Framework, PostgreSQL, Redis, React 18, Redux Toolkit]
 ---
 
 - Own features from requirement to release: the Django REST API, the PostgreSQL data model and the React UI that sits on top.

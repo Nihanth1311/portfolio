@@ -31,7 +31,7 @@
 
   --gutter: clamp(1.25rem, 5vw, 4rem);
   --max: 76rem;
-  --section: clamp(4.5rem, 10vw, 8.5rem);
+  --section: clamp(4rem, 7.5vw, 6.5rem);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -218,6 +218,12 @@ svg {
 .band__grid {
   display: grid;
   gap: 2rem;
+}
+
+.band__lede {
+  margin-top: 1rem;
+  max-width: 30ch;
+  color: var(--ink-2);
 }
 
 @media (min-width: 62rem) {

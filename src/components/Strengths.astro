@@ -1,0 +1,55 @@
+---
+import { strengths } from '../data/site';
+---
+
+<section class="band" id="strengths">
+  <div class="wrap band__grid">
+    <div class="band__head">
+      <h2>What I’m good at</h2>
+      <p class="band__lede">Three things I’d bring to a team, each with where I’ve done it.</p>
+    </div>
+
+    <ul class="strengths">
+      {
+        strengths.map((s) => (
+          <li>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <p class="strengths__proof">{s.proof}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .strengths {
+    display: grid;
+    gap: 2rem;
+  }
+
+  li {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  .strengths__proof {
+    color: var(--green-strong);
+    font-weight: 550;
+  }
+
+  @media (min-width: 50rem) {
+    .strengths {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2.25rem;
+    }
+  }
+</style>

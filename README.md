@@ -21,6 +21,8 @@ You never need to touch the design files to change what the site says.
 | Skills, education, achievements | `src/data/site.ts` |
 | The hero chart (labels and timings) | `trace` in `src/data/site.ts` |
 | Résumé | Replace `public/resume.pdf` with the new file, keeping the name |
+| Photo | Replace `src/assets/nihanth.png` (a cut-out with a transparent background works best) |
+| Facts under the photo, the "What I’m good at" section | `facts` and `strengths` in `src/data/site.ts` |
 | A job | One file per role in `src/content/experience/` |
 | A project | One file per project in `src/content/projects/` |
 
@@ -42,6 +44,8 @@ link: https://example.com      # optional, live URL
 linkLabel: Open My Project     # optional
 repo: https://github.com/...   # optional
 note: Anything a visitor should know before clicking.   # optional
+flow: [Step one, Step two]     # optional, featured project only: an ordered row of steps
+flowLabel: What the steps are  # optional
 ---
 
 An optional paragraph or two about the project.
@@ -61,6 +65,7 @@ team: Product or team      # optional
 location: City, Country
 start: "2027-01"           # year-month
 end: "2027-12"             # leave out for a current role
+stack: [Django, React]     # optional, shown as "Worked with"
 ---
 
 - What you did, as bullet points.

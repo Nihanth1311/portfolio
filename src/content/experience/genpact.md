@@ -5,6 +5,7 @@ team: Quality Engineering and Backend Validation
 location: Hyderabad, India
 start: "2025-05"
 end: "2025-06"
+stack: [Node.js, Unit testing, Jira]
 ---
 
 - Built automated Node.js validation scripts across three system integrations that caught edge-case failures before each production deployment.

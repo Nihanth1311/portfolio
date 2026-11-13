@@ -5,6 +5,7 @@ team: MRM Vault
 location: Pune, India
 start: "2026-02"
 end: "2026-07"
+stack: [React 18, Vite, MUI 5, Redux Toolkit, TanStack Query, ECharts, Plotly, React Flow]
 ---
 
 - Delivered the production Risk Analysis UI in React 18, Vite and MUI 5. ECharts, Plotly and React Flow draw the risk metrics and model dependency graphs, and stakeholders now review model outputs three times faster.

@@ -12,6 +12,7 @@ const rest = withBody.filter((p) => p !== featured);
   <div class="wrap band__grid">
     <div class="band__head">
       <h2>Things I’ve built</h2>
+      <p class="band__lede">Job Hunt is live. The other two don’t have public links yet.</p>
     </div>
 
     <div class="projects">
@@ -39,6 +40,16 @@ const rest = withBody.filter((p) => p !== featured);
               </div>
               {featured.entry.data.note && <p class="lead__note">{featured.entry.data.note}</p>}
             </div>
+            {featured.entry.data.flow.length > 0 && (
+              <div class="flow">
+                {featured.entry.data.flowLabel && <p class="flow__label">{featured.entry.data.flowLabel}</p>}
+                <ol class="flow__steps">
+                  {featured.entry.data.flow.map((step) => (
+                    <li>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
             <div class="lead__side">
               <ul class="points">
                 {featured.entry.data.highlights.map((h) => (
@@ -174,6 +185,39 @@ const rest = withBody.filter((p) => p !== featured);
     border-top: 1px solid var(--rule-deep);
   }
 
+  /* The tracker stages are a real sequence, so they are drawn as one. */
+  .flow {
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--rule-deep);
+  }
+
+  .flow__label {
+    color: var(--on-deep-2);
+    font-size: var(--step--1);
+    margin-bottom: 0.9rem;
+  }
+
+  .flow__steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .flow__steps li {
+    flex: 1 1 6.5rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--rule-deep);
+    border-radius: 3px;
+    font-weight: 550;
+    font-stretch: 90%;
+  }
+
+  .flow__steps li:last-child {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ink);
+  }
+
   .lead .points li::before {
     background: var(--amber);
   }
@@ -237,6 +281,11 @@ const rest = withBody.filter((p) => p !== featured);
     .lead {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
       gap: 3rem;
+    }
+
+    .flow {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
 
     .lead__side {

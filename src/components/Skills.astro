@@ -6,12 +6,13 @@ import { skills } from '../data/site';
   <div class="wrap band__grid">
     <div class="band__head">
       <h2>What I work with</h2>
+      <p class="band__lede">The tools I reach for, grouped by where they sit in the stack.</p>
     </div>
 
     <dl class="skills">
       {
         skills.map((s) => (
-          <div class="skills__row">
+          <div class="skills__group">
             <dt>{s.group}</dt>
             <dd>{s.items.join(', ')}</dd>
           </div>
@@ -22,16 +23,17 @@ import { skills } from '../data/site';
 </section>
 
 <style>
-  .skills__row {
+  .skills {
     display: grid;
-    gap: 0.25rem 2rem;
-    padding-block: 1.15rem;
-    border-top: 1px solid var(--rule);
+    gap: 0 3rem;
   }
 
-  .skills__row:first-child {
-    padding-top: 0;
-    border-top: 0;
+  .skills__group {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--rule);
   }
 
   dt {
@@ -42,13 +44,20 @@ import { skills } from '../data/site';
   }
 
   dd {
-    max-width: 60ch;
+    max-width: 46ch;
+  }
+
+  .skills__group:first-child {
+    border-top-color: var(--ink);
   }
 
   @media (min-width: 44rem) {
-    .skills__row {
-      grid-template-columns: 10.5rem minmax(0, 1fr);
-      align-items: baseline;
+    .skills {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .skills__group:nth-child(2) {
+      border-top-color: var(--ink);
     }
   }
 </style>

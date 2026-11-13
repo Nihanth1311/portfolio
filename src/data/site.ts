@@ -23,6 +23,32 @@ export const site = {
     'Nihanth Baratam is a full-stack software engineer in Pune, India, working with Django, PostgreSQL and React.',
 };
 
+// Short facts shown under your photo in the hero.
+export const facts = [
+  { label: 'Now', value: 'Associate Software Engineer at Solytics Partners' },
+  { label: 'Based in', value: 'Pune, India' },
+  { label: 'Studied', value: 'B.Tech Computer Science, VIT Vellore' },
+];
+
+// The "What I’m good at" section. Each one names where you have done it.
+export const strengths = [
+  {
+    title: 'Whole features, end to end',
+    text: 'I take a feature from the requirement to the release: the data model, the API, and the screen people use.',
+    proof: 'MRM Vault at Solytics Partners, across Django, PostgreSQL and React.',
+  },
+  {
+    title: 'Making slow things fast',
+    text: 'I look for the N+1 query, the missing index and the read that should be cached, then measure what changed.',
+    proof: 'About 40% faster endpoints at Solytics. 800 ms down to 300 ms on Event Whiz.',
+  },
+  {
+    title: 'Safe changes to live systems',
+    text: 'Migrations planned as backward-compatible rollouts, permission checks on protected endpoints, and user input sanitised before it reaches the page.',
+    proof: 'Production PostgreSQL migrations with no downtime. More than 20 critical bugs resolved.',
+  },
+];
+
 // The live chart in the hero. The bars run in real time at these durations.
 export const trace = {
   caption: 'One request to the Event Whiz API, before and after I put Redis in front of it.',
@@ -34,16 +60,17 @@ export const trace = {
 };
 
 export const skills = [
-  { group: 'Languages', items: ['Python', 'JavaScript (ES6+)', 'SQL', 'Java', 'C/C++', 'Solidity'] },
+  { group: 'Languages', items: ['Python', 'JavaScript (ES6+)', 'TypeScript', 'SQL', 'Java', 'C/C++', 'Solidity'] },
   {
     group: 'Backend',
-    items: ['Django (REST APIs, ORM, migrations)', 'Node.js', 'Express.js', 'JWT auth', 'RBAC', 'Redis', 'Socket.io'],
+    items: ['Django (REST APIs, ORM, migrations)', 'Node.js', 'Express.js', 'JWT auth', 'RBAC', 'Socket.io'],
   },
   {
     group: 'Frontend',
-    items: ['React 18', 'Redux Toolkit', 'TanStack Query', 'MUI 5', 'Vite', 'React Flow', 'ECharts', 'Plotly', 'Formik/Yup'],
+    items: ['React 18', 'Next.js', 'Redux Toolkit', 'TanStack Query', 'MUI 5', 'Tailwind CSS', 'Vite', 'React Flow', 'ECharts', 'Plotly', 'Formik/Yup'],
   },
-  { group: 'Data and cloud', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis', 'AWS S3', 'Docker', 'Kubernetes'] },
+  { group: 'Databases', items: ['PostgreSQL', 'MySQL', 'MongoDB', 'Redis'] },
+  { group: 'DevOps and cloud', items: ['Linux', 'AWS', 'Docker', 'Kubernetes'] },
   { group: 'Practice', items: ['Git', 'Code reviews', 'Unit testing', 'Postman', 'Jira', 'Agile/Scrum'] },
 ];
 

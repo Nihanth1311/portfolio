@@ -8,3 +8,5 @@ highlights:
   - Pushed live availability updates in under 200 ms over Socket.io.
   - Cut average booking time by 70%, with no manual refreshes.
 ---
+
+Students reserve a slot before they arrive, and everyone looking at the map sees it fill up live.
