@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { site, facts } from '../data/site';
 import Trace from './Trace.astro';
 import Icon from './Icon.astro';
-// To change the photo, replace src/assets/nihanth.png (a cut-out with a transparent background works best).
+// To change the photo, replace src/assets/nihanth.png (a cut-out with a transparent background; this one has a white sticker outline baked in).
 import portrait from '../assets/nihanth.png';
 ---
 
@@ -140,12 +140,7 @@ import portrait from '../assets/nihanth.png';
     aspect-ratio: 5 / 5.4;
     padding-top: 7%;
     background: var(--deep);
-    /* A whitish frame, like the border of a photo print, with a hairline and a soft drop to lift it off the page. */
-    border: 0.55rem solid var(--frame);
-    border-radius: 6px;
-    box-shadow:
-      0 0 0 1px var(--rule),
-      0 1.1rem 2rem -1.2rem oklch(0.23 0.035 158 / 0.5);
+    border-radius: 4px;
     overflow: hidden;
   }
 
@@ -155,6 +150,8 @@ import portrait from '../assets/nihanth.png';
     height: 100%;
     object-fit: cover;
     object-position: 50% 0;
+    /* The cut-out carries its own white sticker outline; this lifts it off the wall. */
+    filter: drop-shadow(0 0.35rem 0.5rem oklch(0.12 0.03 158 / 0.55));
   }
 
   .hero__facts {
