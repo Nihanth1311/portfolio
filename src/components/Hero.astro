@@ -140,7 +140,12 @@ import portrait from '../assets/nihanth.png';
     aspect-ratio: 5 / 5.4;
     padding-top: 7%;
     background: var(--deep);
-    border-radius: 4px;
+    /* A whitish frame, like the border of a photo print, with a hairline and a soft drop to lift it off the page. */
+    border: 0.55rem solid var(--frame);
+    border-radius: 6px;
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 1.1rem 2rem -1.2rem oklch(0.23 0.035 158 / 0.5);
     overflow: hidden;
   }
 
