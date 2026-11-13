@@ -3,6 +3,7 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 // One markdown file per project in src/content/projects/.
+// After changing a schema here, restart `npm run dev` so cached entries are re-read.
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
   schema: z.object({
