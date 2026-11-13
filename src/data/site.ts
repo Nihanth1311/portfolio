@@ -14,7 +14,7 @@ export const site = {
   resumeFileName: 'Nihanth-Baratam-Resume.pdf',
 
   // Each entry is one line of the big headline.
-  headline: ['I build the whole feature.', 'Then I make it fast.'],
+  headline: ['I ship features.', 'Then I make them fast.'],
   intro:
     'I’m Nihanth, a full-stack engineer at Solytics Partners in Pune. I work on MRM Vault, a model risk management platform used by financial institutions, with Django and PostgreSQL behind the API and React in front of it.',
   // Shown in the contact section. Set to '' to hide it.

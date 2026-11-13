@@ -54,4 +54,16 @@ import { site } from '../data/site';
     letter-spacing: -0.012em;
     text-wrap: balance;
   }
+
+  /* The closing mark, the same size and colour as the opening one, set right after the last word. */
+  p::after {
+    content: '”';
+    margin-left: 0.06em;
+    font-size: 1.9em;
+    font-weight: 700;
+    font-stretch: 76%;
+    line-height: 0;
+    vertical-align: -0.31em;
+    color: var(--amber);
+  }
 </style>
