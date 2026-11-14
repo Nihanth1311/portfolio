@@ -1,13 +1,17 @@
 ---
 // The 1200x630 picture shown when the site's link is shared.
 // It is a page so it can use the site's own fonts and colours; public/og.png is a screenshot of it.
+// To refresh it: run `npm run dev`, then capture http://localhost:4321/portfolio/og/ at 1200x630.
 import { Image } from 'astro:assets';
-import '@fontsource-variable/anek-latin/wdth.css';
+import '@fontsource-variable/caveat';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/jetbrains-mono';
 import '../styles/global.css';
 import { site, trace } from '../data/site';
 import portrait from '../assets/nihanth.png';
 
 const max = Math.max(...trace.rows.map((r) => r.ms));
+const [lead, rest] = site.headline;
 ---
 
 <!doctype html>
@@ -19,26 +23,41 @@ const max = Math.max(...trace.rows.map((r) => r.ms));
   </head>
   <body>
     <div class="card">
-      <div class="card__words">
-        <p class="card__name">{site.name}</p>
-        <h1>
-          {site.headline.map((line) => <span>{line}</span>)}
-        </h1>
-        <div class="card__bars">
+      <div class="words">
+        <p class="tag">Full-stack engineer · {site.location}</p>
+        <h1 class="name hand">{site.name}</h1>
+        <svg class="underline" viewBox="0 0 600 30" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M6 19 C 120 7, 250 26, 380 14 S 540 9, 594 17" />
+        </svg>
+        <p class="headline">{lead} <span class="mark">{rest}</span></p>
+
+        <div class="chart">
           {
             trace.rows.map((row) => (
-              <div class="card__row">
-                <span class="card__bar" data-kind={row.kind} style={`width:${(row.ms / max) * 100}%`} />
-                <span class="card__ms">{row.ms} ms</span>
+              <div class="row" data-kind={row.kind}>
+                <span class="hand label">{row.kind === 'slow' ? 'no cache' : '+ Redis'}</span>
+                <svg viewBox="0 0 300 30" preserveAspectRatio="none" style={`width:${(row.ms / max) * 330}px`}>
+                  <path d="M8 15 C 90 11, 200 19, 292 14" />
+                </svg>
+                <span class="ms">{row.ms} ms</span>
               </div>
             ))
           }
         </div>
-        <p class="card__role">Full-stack engineer in {site.location}</p>
       </div>
-      <div class="card__photo">
-        <Image src={portrait} alt="" width={540} format="webp" quality={90} loading="eager" />
+
+      <div class="me">
+        <figure class="polaroid">
+          <span class="tape tape--a"></span>
+          <div class="img">
+            <Image src={portrait} alt="" width={540} format="webp" quality={90} loading="eager" />
+          </div>
+          <figcaption class="hand">that’s me!</figcaption>
+        </figure>
+        <div class="sticky hand">open to full-stack roles →</div>
       </div>
+
+      <p class="url">nihanth1311.github.io/portfolio</p>
     </div>
   </body>
 </html>
@@ -50,93 +69,175 @@ const max = Math.max(...trace.rows.map((r) => r.ms));
     overflow: hidden;
   }
 
-  .card {
-    display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 56px;
-    width: 1200px;
-    height: 630px;
-    padding: 56px 64px;
-    background: var(--paper);
+  body::before {
+    left: 72px;
   }
 
-  .card__words {
+  .card {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 48px;
+    width: 1200px;
+    height: 630px;
+    padding: 56px 120px 56px 120px;
+  }
+
+  .words {
     display: flex;
     flex-direction: column;
   }
 
-  .card__name {
-    font-size: 30px;
-    font-weight: 650;
-    font-stretch: 85%;
+  .tag {
+    font-size: 15px;
   }
 
-  h1 {
-    margin-top: 28px;
-    font-size: 84px;
+  .name {
+    margin-top: 6px;
+    font-size: 116px;
     font-weight: 700;
-    font-stretch: 76%;
-    line-height: 0.98;
-    letter-spacing: -0.015em;
-  }
-
-  h1 span {
-    display: block;
+    line-height: 1;
+    letter-spacing: -0.01em;
     white-space: nowrap;
   }
 
-  .card__bars {
+  .underline {
+    width: 560px;
+    height: 26px;
+    margin-top: -10px;
+    overflow: visible;
+  }
+
+  .underline path {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 6;
+    stroke-linecap: round;
+  }
+
+  .headline {
+    margin-top: 22px;
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    max-width: 15ch;
+  }
+
+  .chart {
     display: grid;
-    gap: 12px;
+    gap: 6px;
     margin-top: auto;
   }
 
-  .card__row {
+  .row {
     display: flex;
     align-items: center;
-    gap: 16px;
-    max-width: 560px;
+    gap: 14px;
   }
 
-  .card__bar {
-    height: 30px;
-    border-radius: 0 2px 2px 0;
+  .row[data-kind='slow'] {
+    --c: var(--red);
   }
 
-  .card__bar[data-kind='slow'] {
-    background: var(--amber);
+  .row[data-kind='fast'] {
+    --c: var(--green);
   }
 
-  .card__bar[data-kind='fast'] {
-    background: var(--green);
+  .label {
+    width: 110px;
+    font-size: 30px;
+    color: var(--c);
   }
 
-  .card__ms {
-    font-size: 26px;
-    font-weight: 650;
-    font-stretch: 85%;
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
+  .row svg {
+    height: 28px;
+    overflow: visible;
   }
 
-  .card__role {
-    margin-top: 28px;
-    font-size: 28px;
-    color: var(--ink-2);
+  .row path {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 22;
+    stroke-linecap: round;
+    opacity: 0.82;
   }
 
-  .card__photo {
-    padding-top: 28px;
-    background: var(--deep);
-    border-radius: 6px;
+  .ms {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .me {
+    position: relative;
+    align-self: center;
+  }
+
+  .polaroid {
+    position: relative;
+    margin: 0;
+    padding: 14px 14px 58px;
+    background: var(--card);
+    box-shadow:
+      0 22px 40px -14px rgba(40, 30, 10, 0.35),
+      0 2px 4px rgba(40, 30, 10, 0.12);
+    rotate: 3.5deg;
+  }
+
+  .img {
+    aspect-ratio: 4 / 5;
     overflow: hidden;
+    background: linear-gradient(165deg, #e2ebe0, #c8d6cb);
   }
 
-  .card__photo img {
+  .img img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 0;
+    object-position: top center;
+  }
+
+  .polaroid figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    text-align: center;
+    font-size: 34px;
+    color: var(--red);
+  }
+
+  .tape--a {
+    top: -14px;
+    left: 30px;
+    rotate: -8deg;
+  }
+
+  .sticky {
+    position: absolute;
+    left: -150px;
+    bottom: 20px;
+    width: 170px;
+    padding: 14px 16px 18px;
+    background: var(--sticky);
+    box-shadow:
+      0 14px 22px -8px rgba(70, 60, 0, 0.35),
+      inset 0 -10px 14px -12px rgba(0, 0, 0, 0.2);
+    font-size: 27px;
+    line-height: 1.05;
+    color: #5b4b00;
+    rotate: -6deg;
+  }
+
+  .url {
+    position: absolute;
+    right: 120px;
+    bottom: 22px;
+    font-family: var(--mono);
+    font-size: 15px;
+    color: var(--ink-3);
   }
 </style>
