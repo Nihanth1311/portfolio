@@ -3,7 +3,8 @@
 // and it leaves a short note at each milestone.
 ---
 
-<div class="pp" data-progress aria-hidden="true">
+<div class="pp" data-progress aria-hidden="true" title="Drag me anywhere">
+  <span class="pp__grip">⠿ drag me</span>
   <p class="pp__note" data-pp-note>scroll to start reading ↓</p>
   <div class="pp__track">
     <svg class="pp__line" viewBox="0 0 200 26" preserveAspectRatio="none">
@@ -93,6 +94,64 @@
     window.addEventListener('scroll', measure, { passive: true });
     window.addEventListener('resize', measure);
     measure();
+
+    // Drag the box anywhere on screen. It stays inside the window and remembers where it was left.
+    const KEY = 'notebook-progress-pos';
+    let pos = { x: 0, y: 0 };
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') pos = saved;
+    } catch {}
+
+    const place = () => {
+      root.style.translate = `${pos.x}px ${pos.y}px`;
+      // Pull it back in if it ended up off screen (after a resize, or a smaller window).
+      const r = root.getBoundingClientRect();
+      const pad = 8;
+      let dx = 0;
+      let dy = 0;
+      if (r.left < pad) dx = pad - r.left;
+      if (r.right > window.innerWidth - pad) dx = window.innerWidth - pad - r.right;
+      if (r.top < pad) dy = pad - r.top;
+      if (r.bottom > window.innerHeight - pad) dy = window.innerHeight - pad - r.bottom;
+      if (dx || dy) {
+        pos = { x: pos.x + dx, y: pos.y + dy };
+        root.style.translate = `${pos.x}px ${pos.y}px`;
+      }
+    };
+    place();
+    window.addEventListener('resize', place);
+
+    let grab: { x: number; y: number; ox: number; oy: number } | null = null;
+    root.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      grab = { x: e.clientX, y: e.clientY, ox: pos.x, oy: pos.y };
+      root.setPointerCapture(e.pointerId);
+      root.classList.add('is-held');
+    });
+    root.addEventListener('pointermove', (e) => {
+      if (!grab) return;
+      pos = { x: grab.ox + e.clientX - grab.x, y: grab.oy + e.clientY - grab.y };
+      place();
+    });
+    const drop = () => {
+      if (!grab) return;
+      grab = null;
+      root.classList.remove('is-held');
+      try {
+        localStorage.setItem(KEY, JSON.stringify(pos));
+      } catch {}
+    };
+    root.addEventListener('pointerup', drop);
+    root.addEventListener('pointercancel', drop);
+    // Double-click puts it back in the corner.
+    root.addEventListener('dblclick', () => {
+      pos = { x: 0, y: 0 };
+      place();
+      try {
+        localStorage.removeItem(KEY);
+      } catch {}
+    });
   }
 </script>
 
@@ -111,8 +170,51 @@
     box-shadow:
       0 0 0 1px var(--rule),
       0 10px 24px -12px rgba(40, 30, 10, 0.35);
-    pointer-events: none;
     rotate: -1.5deg;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition:
+      rotate 400ms var(--spring),
+      scale 300ms var(--spring),
+      box-shadow 300ms ease;
+  }
+
+  .pp.is-held {
+    cursor: grabbing;
+    rotate: 2deg;
+    scale: 1.05;
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 22px 36px -14px rgba(40, 30, 10, 0.45);
+  }
+
+  .pp__grip {
+    position: absolute;
+    top: -1.15rem;
+    left: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    opacity: 0;
+    translate: 0 4px;
+    transition:
+      opacity 200ms ease,
+      translate 300ms var(--spring);
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    .pp:hover .pp__grip {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  .pp.is-held .pp__grip {
+    opacity: 0;
   }
 
   .pp__note {
