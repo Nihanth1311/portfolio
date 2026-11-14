@@ -1,84 +1,257 @@
 ---
+import Page from './Page.astro';
 import { education, achievements } from '../data/site';
+
+const notes = ['var(--sticky)', 'var(--sticky-blue)', 'var(--sticky-pink)', '#dff3e4'];
+const rots = [-3, 2.5, -1.5, 3];
 ---
 
-<section class="band" id="background">
-  <div class="wrap band__grid">
-    <div class="band__head">
-      <h2>Outside of work</h2>
-      <p class="band__lede">Where I studied, and what I did there besides coursework.</p>
-    </div>
+<Page n={6} title="background" id="background">
+  <h2 class="title" data-in>
+    School, clubs, <span class="hand title__hand">and the rest.</span>
+  </h2>
 
-    <div class="bg">
-      <div>
-        <h3>Education</h3>
-        <ul class="bg__list">
+  <div class="split">
+    <div class="report" data-in style="--rot:-0.8deg;--from-rot:-3deg">
+      <span class="tape report__tape"></span>
+      <p class="report__head hand">report card</p>
+      <table>
+        <tbody>
           {
             education.map((e) => (
-              <li>
-                <p class="bg__title">{e.school}</p>
-                <p>
-                  {e.detail}, {e.result}
-                </p>
-                <p class="bg__meta">
-                  {e.years}
-                  {e.place && <>, {e.place}</>}
-                </p>
-              </li>
+              <tr>
+                <td>
+                  <strong>{e.school}</strong>
+                  <span>{e.detail}</span>
+                  <span class="report__years">{e.years}</span>
+                </td>
+                <td class="report__grade">
+                  <span class="hand">{e.result}</span>
+                  <svg viewBox="0 0 120 60" aria-hidden="true">
+                    <path class="draw" style="--d:600ms" d="M64 6 C 100 4, 116 20, 112 34 C 107 52, 70 56, 40 52 C 12 48, 4 32, 10 20 C 18 6, 48 4, 74 8" />
+                  </svg>
+                </td>
+              </tr>
             ))
           }
-        </ul>
-      </div>
-      <div>
-        <h3>Wins and side quests</h3>
-        <ul class="bg__list">
-          {
-            achievements.map((a) => (
-              <li>
-                <p class="bg__title">{a.title}</p>
-                <p>{a.text}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
+        </tbody>
+      </table>
     </div>
+
+    <ul class="stickies">
+      {
+        achievements.map((a, i) => (
+          <li class="stickies__item" style={`--bg:${notes[i % notes.length]};--rot:${rots[i % rots.length]}deg`} data-drag>
+            <h3 class="hand">{a.title}</h3>
+            <p>{a.text}</p>
+          </li>
+        ))
+      }
+    </ul>
   </div>
-</section>
+  <p class="hint hand" data-in>(go on, rearrange the sticky notes)</p>
+</Page>
 
 <style>
-  .bg {
+  .title {
+    max-width: 16ch;
+  }
+
+  .title__hand {
+    display: inline-block;
+    color: var(--red);
+    font-size: 1.12em;
+    rotate: -2deg;
+  }
+
+  .split {
     display: grid;
     gap: 3rem;
+    margin-top: 3rem;
+    align-items: start;
   }
 
-  h3 {
-    font-size: var(--step-2);
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--ink);
+  @media (min-width: 60rem) {
+    .split {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    }
   }
 
-  .bg__list li {
-    padding-block: 1.1rem;
-    border-bottom: 1px solid var(--rule);
+  .report {
+    position: relative;
+    padding: 2rem 1.6rem 1.4rem;
+    background: var(--card);
+    box-shadow: 0 18px 36px -20px rgba(40, 30, 10, 0.45);
   }
 
-  .bg__list li:last-child {
-    border-bottom: 0;
+  .report__tape {
+    top: -0.85rem;
+    left: 2rem;
+    rotate: -6deg;
   }
 
-  .bg__title {
+  .report__head {
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--blue);
+    margin-bottom: 0.6rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  td {
+    padding: 1rem 0;
+    border-top: 1.5px solid var(--rule);
+    vertical-align: middle;
+  }
+
+  td strong {
+    display: block;
     font-weight: 600;
   }
 
-  .bg__meta {
+  td span {
+    display: block;
+    font-size: var(--step--1);
     color: var(--ink-2);
-    font-variant-numeric: tabular-nums;
   }
 
-  @media (min-width: 50rem) {
-    .bg {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .report__years {
+    font-family: var(--mono);
+    font-size: 0.75rem !important;
+    color: var(--ink-3) !important;
+    margin-top: 0.2rem;
+  }
+
+  .report__grade {
+    position: relative;
+    width: 10rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .report__grade .hand {
+    position: relative;
+    z-index: 1;
+    font-size: 1.5rem;
+    color: var(--red);
+    line-height: 1;
+  }
+
+  .report__grade svg {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 9.5rem;
+    translate: -50% -50%;
+    overflow: visible;
+  }
+
+  .report__grade path {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .stickies {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+
+  .stickies__item {
+    position: relative;
+    padding: 1.1rem 1.1rem 1.3rem;
+    background: var(--bg);
+    box-shadow:
+      0 14px 20px -10px rgba(60, 50, 0, 0.35),
+      inset 0 -10px 14px -12px rgba(0, 0, 0, 0.18);
+    rotate: var(--rot);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition:
+      rotate 400ms var(--spring),
+      scale 300ms var(--spring),
+      box-shadow 300ms ease;
+  }
+
+  .stickies__item::before {
+    content: '';
+    position: absolute;
+    top: -0.45rem;
+    left: 50%;
+    width: 0.9rem;
+    height: 0.9rem;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff8a7a, var(--red) 60%);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+  }
+
+  .stickies__item:global(.is-held) {
+    cursor: grabbing;
+    scale: 1.06;
+    z-index: 5;
+    box-shadow: 0 26px 36px -10px rgba(60, 50, 0, 0.4);
+  }
+
+  .stickies__item h3 {
+    font-size: 1.55rem;
+    line-height: 1.05;
+    color: var(--ink);
+  }
+
+  .stickies__item p {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  /* Sticky notes get pinned up one at a time when the board arrives. */
+  :global(.js) .stickies__item {
+    animation: pin 700ms var(--spring) both paused;
+  }
+
+  :global(.js) .split:has(.report:global(.in)) .stickies__item {
+    animation-play-state: running;
+  }
+
+  .stickies__item:nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  .stickies__item:nth-child(3) {
+    animation-delay: 240ms;
+  }
+
+  .stickies__item:nth-child(4) {
+    animation-delay: 360ms;
+  }
+
+  @keyframes pin {
+    from {
+      opacity: 0;
+      scale: 1.4;
+      translate: 0 -1rem;
+    }
+  }
+
+  .hint {
+    margin-top: 1.6rem;
+    font-size: 1.3rem;
+    color: var(--ink-3);
+    text-align: right;
+  }
+
+  @media (max-width: 30rem) {
+    .stickies {
+      grid-template-columns: 1fr;
     }
   }
 </style>

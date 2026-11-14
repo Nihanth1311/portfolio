@@ -1,66 +1,130 @@
 ---
 import { site } from '../data/site';
-import Icon from './Icon.astro';
 import { withBase } from '../lib/url';
+
+const links = [
+  { href: '/#work', label: 'work' },
+  { href: '/#projects', label: 'projects' },
+  { href: '/#skills', label: 'skills' },
+  { href: '/#contact', label: 'contact' },
+];
 ---
 
 <header class="nav wrap">
-  <a class="nav__name" href={withBase('/')}>{site.name}</a>
+  <a class="nav__logo" href={withBase('/')} aria-label={`${site.name}, home`}>
+    nihanth<span>.</span>
+  </a>
   <nav aria-label="Sections">
     <ul class="nav__links">
-      <li><a href={withBase('/#work')}>Work</a></li>
-      <li><a href={withBase('/#projects')}>Projects</a></li>
-      <li><a href={withBase('/#skills')}>Skills</a></li>
-      <li><a href={withBase('/#contact')}>Contact</a></li>
+      {
+        links.map((l) => (
+          <li>
+            <a href={withBase(l.href)}>
+              {l.label}
+              <svg viewBox="0 0 60 8" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M2 5 C 14 2, 26 7, 38 4 S 54 3, 58 5" />
+              </svg>
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </nav>
-  <a class="btn nav__resume" href={withBase(site.resume)} download={site.resumeFileName}>
-    <Icon name="download" />
-    Résumé
-  </a>
+  <a class="nav__stamp" href={withBase(site.resume)} download={site.resumeFileName}>résumé ↓</a>
 </header>
 
 <style>
   .nav {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    padding-block: 1.25rem;
+    gap: clamp(1rem, 3vw, 2rem);
+    padding-block: 1.4rem;
   }
 
-  .nav__name {
+  .nav__logo {
     margin-right: auto;
-    font-weight: 650;
-    font-stretch: 85%;
-    font-size: var(--step-1);
+    font-family: var(--hand);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
     text-decoration: none;
-    letter-spacing: -0.005em;
+  }
+
+  .nav__logo span {
+    color: var(--red);
   }
 
   .nav__links {
-    display: none;
-    gap: 1.75rem;
+    display: flex;
+    gap: clamp(1rem, 2.5vw, 1.8rem);
   }
 
   .nav__links a {
-    text-decoration-color: transparent;
-    padding-block: 0.6rem;
+    position: relative;
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink-2);
+    text-decoration: none;
+    padding-block: 0.3rem;
+  }
+
+  .nav__links svg {
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    width: calc(100% + 4px);
+    height: 8px;
+    overflow: visible;
+  }
+
+  .nav__links path {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 70;
+    stroke-dashoffset: 70;
+    transition: stroke-dashoffset 420ms cubic-bezier(0.65, 0, 0.35, 1);
   }
 
   @media (hover: hover) {
     .nav__links a:hover {
-      text-decoration-color: currentColor;
+      color: var(--ink);
+    }
+
+    .nav__links a:hover path {
+      stroke-dashoffset: 0;
     }
   }
 
-  .nav__resume {
-    min-height: 2.6rem;
-    padding-block: 0.4rem;
+  .nav__stamp {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--red);
+    text-decoration: none;
+    border: 2px solid var(--red);
+    border-radius: 4px;
+    padding: 0.35rem 0.75rem;
+    rotate: -3deg;
+    transition:
+      rotate 300ms var(--spring),
+      scale 300ms var(--spring);
   }
 
-  @media (min-width: 48rem) {
+  @media (hover: hover) {
+    .nav__stamp:hover {
+      rotate: 0deg;
+      scale: 1.06;
+      text-decoration: none;
+    }
+  }
+
+  @media (max-width: 44rem) {
     .nav__links {
-      display: flex;
+      display: none;
     }
   }
 </style>

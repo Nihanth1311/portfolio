@@ -1,0 +1,266 @@
+---
+// A pencil in the corner that writes a line as you read. Its tip carries the percentage read,
+// and it leaves a short note at each milestone.
+---
+
+<div class="pp" data-progress aria-hidden="true">
+  <p class="pp__note" data-pp-note>scroll to start reading ↓</p>
+  <div class="pp__track">
+    <svg class="pp__line" viewBox="0 0 200 26" preserveAspectRatio="none">
+      <path class="pp__ghost" d="M3 15 C 26 9, 44 19, 70 13 S 118 8, 146 14 S 182 17, 197 12" />
+      <path class="pp__ink" data-pp-path d="M3 15 C 26 9, 44 19, 70 13 S 118 8, 146 14 S 182 17, 197 12" />
+    </svg>
+    <div class="pp__pencil" data-pp-pencil>
+      <span class="pp__pct" data-pp-pct>0%</span>
+      <svg width="62" height="14" viewBox="0 0 62 14">
+        <rect x="0" y="2" width="9" height="10" rx="2.5" fill="#f2a7b5" />
+        <rect x="8" y="1.5" width="6" height="11" fill="#b9bec9" />
+        <path d="M9.5 1.5v11M12 1.5v11" stroke="#8d93a0" stroke-width=".8" />
+        <rect x="14" y="1.5" width="32" height="11" fill="#f4c542" />
+        <path d="M14 5.2h32M14 8.8h32" stroke="#d9a623" stroke-width=".8" />
+        <path d="M46 1.5 L58 6.2 L58 7.8 L46 12.5 Z" fill="#efd3a8" />
+        <path d="M54.5 4.9 L61 7 L54.5 9.1 Z" fill="#2c3140" />
+      </svg>
+    </div>
+    <svg class="pp__stars" viewBox="0 0 80 50">
+      <path d="M14 12 l2 6 6 1 -5 4 2 6 -5-4 -5 4 2-6 -5-4 6-1z" />
+      <path d="M62 8 l1.5 4 4 .6 -3 2.8 1 4 -3.5-2.2 -3.5 2.2 1-4 -3-2.8 4-.6z" />
+      <path d="M44 34 l1.2 3.2 3.2.5 -2.4 2.2 .8 3.2 -2.8-1.8 -2.8 1.8 .8-3.2 -2.4-2.2 3.2-.5z" />
+    </svg>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-progress]');
+  if (root) {
+    const path = root.querySelector<SVGPathElement>('[data-pp-path]')!;
+    const svg = path.ownerSVGElement!;
+    const pencil = root.querySelector<HTMLElement>('[data-pp-pencil]')!;
+    const pct = root.querySelector<HTMLElement>('[data-pp-pct]')!;
+    const note = root.querySelector<HTMLElement>('[data-pp-note]')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = `${len}`;
+
+    const notes: [number, string][] = [
+      [0, 'scroll to start reading ↓'],
+      [3, 'just getting started…'],
+      [25, 'a quarter in, nice'],
+      [50, 'halfway there ☕'],
+      [75, 'almost done…'],
+      [97, 'you read it all. thanks! ✓'],
+    ];
+
+    let target = 0;
+    let shown = 0;
+    let lastNote = '';
+    let frame = 0;
+
+    const measure = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      target = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 1;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    const paint = () => {
+      frame = 0;
+      shown = reduce ? target : shown + (target - shown) * 0.18;
+      if (Math.abs(target - shown) < 0.0005) shown = target;
+
+      path.style.strokeDashoffset = `${len * (1 - shown)}`;
+      // Place the pencil tip on the end of the line, in pixels.
+      const pt = path.getPointAtLength(len * shown);
+      const box = svg.getBoundingClientRect();
+      const vb = svg.viewBox.baseVal;
+      pencil.style.translate = `${(pt.x / vb.width) * box.width}px ${(pt.y / vb.height) * box.height}px`;
+
+      const p = Math.round(shown * 100);
+      pct.textContent = `${p}%`;
+      const text = [...notes].reverse().find(([at]) => p >= at)![1];
+      if (text !== lastNote) {
+        lastNote = text;
+        note.textContent = text;
+        note.classList.remove('is-new');
+        void note.offsetWidth;
+        note.classList.add('is-new');
+      }
+      root.classList.toggle('is-done', p >= 97);
+      root.classList.toggle('is-started', p >= 1);
+
+      if (shown !== target) frame = requestAnimationFrame(paint);
+    };
+
+    window.addEventListener('scroll', measure, { passive: true });
+    window.addEventListener('resize', measure);
+    measure();
+  }
+</script>
+
+<style>
+  .pp {
+    position: fixed;
+    right: clamp(0.75rem, 2.5vw, 1.75rem);
+    bottom: clamp(0.75rem, 2.5vw, 1.5rem);
+    z-index: 60;
+    width: 13.5rem;
+    padding: 0.55rem 0.9rem 0.7rem;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 10px 24px -12px rgba(40, 30, 10, 0.35);
+    pointer-events: none;
+    rotate: -1.5deg;
+  }
+
+  .pp__note {
+    font-family: var(--hand);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--blue);
+    white-space: nowrap;
+  }
+
+  .pp__note.is-new {
+    animation: note-pop 520ms var(--spring);
+  }
+
+  @keyframes note-pop {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+      rotate: -4deg;
+    }
+  }
+
+  .pp__track {
+    position: relative;
+    height: 2.4rem;
+    margin-top: 0.15rem;
+  }
+
+  .pp__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1.6rem;
+    overflow: visible;
+  }
+
+  .pp__line path {
+    fill: none;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .pp__ghost {
+    stroke: var(--rule);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 5;
+  }
+
+  .pp__ink {
+    stroke: var(--ink);
+    stroke-width: 2.4;
+  }
+
+  /* The pencil's tip sits at the box's top-left; the body leans back up-left. */
+  .pp__pencil {
+    position: absolute;
+    left: 0;
+    bottom: 1.6rem;
+    width: 0;
+    height: 0;
+  }
+
+  .pp__pencil svg {
+    position: absolute;
+    right: -1px;
+    bottom: -7px;
+    transform-origin: 61px 7px;
+    rotate: -28deg;
+    filter: drop-shadow(1px 2px 1px rgba(40, 30, 10, 0.25));
+  }
+
+  .pp.is-started .pp__pencil svg {
+    animation: scribble 900ms ease-in-out infinite;
+  }
+
+  @keyframes scribble {
+    50% {
+      rotate: -24deg;
+    }
+  }
+
+  .pp__pct {
+    position: absolute;
+    left: 0.35rem;
+    bottom: 0.55rem;
+    font-family: var(--hand);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--red);
+    line-height: 1;
+  }
+
+  .pp__stars {
+    position: absolute;
+    right: -1.6rem;
+    top: -2.2rem;
+    width: 4rem;
+    overflow: visible;
+  }
+
+  .pp__stars path {
+    fill: var(--hl);
+    stroke: var(--red);
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+    opacity: 0;
+    scale: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 300ms ease,
+      scale 600ms var(--spring);
+  }
+
+  .pp.is-done .pp__stars path {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .pp.is-done .pp__stars path:nth-child(2) {
+    transition-delay: 120ms;
+  }
+
+  .pp.is-done .pp__stars path:nth-child(3) {
+    transition-delay: 240ms;
+  }
+
+  .pp.is-done .pp__note {
+    color: var(--green);
+  }
+
+  @media (max-width: 40rem) {
+    .pp {
+      width: 10.5rem;
+      padding: 0.4rem 0.7rem 0.55rem;
+    }
+
+    .pp__note {
+      font-size: 1rem;
+    }
+  }
+
+  @media print {
+    .pp {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+// One page of the notebook: a torn top edge, a page label, and a page number in the margin.
+interface Props {
+  n: number;
+  title: string;
+  id?: string;
+  class?: string;
+}
+const { n, title, id, class: extra } = Astro.props;
+const num = String(n).padStart(2, '0');
+---
+
+<div class="torn" aria-hidden="true"></div>
+<section class:list={['page', extra]} id={id}>
+  <p class="page__no hand" aria-hidden="true">p.{n}</p>
+  <div class="wrap">
+    <p class="tag page__tag" data-in>Page {num} — {title}</p>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .torn {
+    position: relative;
+    z-index: 2;
+    height: 22px;
+    margin-top: -6px;
+    background: var(--paper);
+    clip-path: polygon(0 45%, 3% 72%, 7% 38%, 11% 66%, 16% 34%, 21% 62%, 26% 40%, 31% 74%, 37% 36%, 43% 68%, 49% 35%, 55% 70%, 61% 42%, 67% 69%, 73% 33%, 79% 65%, 85% 40%, 91% 72%, 96% 38%, 100% 58%, 100% 100%, 0 100%);
+    filter: drop-shadow(0 -1px 0 var(--rule));
+  }
+
+  .page {
+    position: relative;
+    padding-block: var(--section);
+  }
+
+  .page__no {
+    position: absolute;
+    top: calc(var(--section) - 0.4rem);
+    left: 0;
+    width: var(--margin-x);
+    text-align: center;
+    font-size: 1.4rem;
+    color: var(--red);
+    rotate: -8deg;
+    z-index: 1;
+  }
+
+  @media (max-width: 40rem) {
+    .page__no {
+      display: none;
+    }
+  }
+
+  .page__tag {
+    margin-bottom: 1rem;
+  }
+</style>

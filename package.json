@@ -1,7 +1,7 @@
 {
   "name": "nihanth-portfolio",
   "type": "module",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "astro dev",
@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@fontsource-variable/anek-latin": "^5.3.0",
+    "@fontsource-variable/caveat": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
     "astro": "^7.4.11"
   }
 }

@@ -1,304 +1,419 @@
 ---
 import { getCollection } from 'astro:content';
+import Page from './Page.astro';
 import { withBase } from '../lib/url';
-import Icon from './Icon.astro';
 
 const all = (await getCollection('projects', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
-const featured = all.find((entry) => entry.data.featured);
-const rest = all.filter((entry) => entry !== featured);
+const featured = all.find((p) => p.data.featured);
+const rest = all.filter((p) => p !== featured);
 const pageFor = (id: string) => withBase(`/projects/${id}/`);
+const tick = 'M4 15 L11 22 L25 5';
 ---
 
-<section class="band" id="projects">
-  <div class="wrap band__grid">
-    <div class="band__head">
-      <h2>Things I’ve built</h2>
-      <p class="band__lede">Job Hunt is live. The other two don’t have public links yet.</p>
-    </div>
+<Page n={4} title="things I’ve built" id="projects">
+  <h2 class="title" data-in>
+    Side projects, <span class="hand title__hand">built end to end.</span>
+  </h2>
 
-    <div class="projects">
-      {
-        featured && (
-          <article class="lead">
-            <div class="lead__main">
-              <h3>{featured.data.title}</h3>
-              <p class="lead__summary">{featured.data.summary}</p>
-              {featured.data.intro && <p class="lead__body">{featured.data.intro}</p>}
-              <div class="lead__actions">
-                {featured.data.link && (
-                  <a class="btn lead__btn" href={featured.data.link} target="_blank" rel="noopener">
-                    {featured.data.linkLabel ?? 'Open the live app'}
-                    <Icon name="external" />
-                  </a>
-                )}
-                {featured.data.caseStudy && <a href={pageFor(featured.id)}>Read how I built it</a>}
-                {featured.data.repo && (
-                  <a href={featured.data.repo} target="_blank" rel="noopener">
-                    Source code
-                  </a>
-                )}
-              </div>
-              {featured.data.note && <p class="lead__note">{featured.data.note}</p>}
-            </div>
-            {featured.data.flow.length > 0 && (
-              <div class="flow">
-                {featured.data.flowLabel && <p class="flow__label">{featured.data.flowLabel}</p>}
-                <ol class="flow__steps">
-                  {featured.data.flow.map((step) => (
-                    <li>{step}</li>
-                  ))}
-                </ol>
-              </div>
+  {
+    featured && (
+      <article class="lead" data-in>
+        <p class="lead__flag hand" aria-hidden="true">
+          my favourite one ★
+        </p>
+        <div class="lead__text">
+          <h3 class="lead__title">
+            {featured.data.title}
+            <span class="lead__live">live</span>
+          </h3>
+          <p class="lead__summary">{featured.data.intro ?? featured.data.summary}</p>
+          <ul class="ticks">
+            {featured.data.highlights.slice(0, 4).map((h, i) => (
+              <li>
+                <svg viewBox="0 0 28 28" aria-hidden="true">
+                  <path class="draw" style={`--d:${600 + i * 180}ms;--dur:.45s`} d={tick} />
+                </svg>
+                {h}
+              </li>
+            ))}
+          </ul>
+          <ul class="chips">
+            {featured.data.stack.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+          <div class="lead__actions">
+            {featured.data.link && (
+              <a class="btn" href={featured.data.link} target="_blank" rel="noopener">
+                {featured.data.linkLabel ?? 'Open the app'} ↗
+              </a>
             )}
-            <div class="lead__side">
-              <ul class="points">
-                {featured.data.highlights.map((h) => (
-                  <li>{h}</li>
-                ))}
-              </ul>
-              {featured.data.stack.length > 0 && (
-                <p class="stack">
-                  <span>Built with</span> {featured.data.stack.join(', ')}
-                </p>
-              )}
-            </div>
-          </article>
-        )
-      }
+            {featured.data.caseStudy && (
+              <a class="btn btn--ghost" href={pageFor(featured.id)}>
+                How I built it
+              </a>
+            )}
+          </div>
+          {featured.data.note && <p class="lead__note">{featured.data.note}</p>}
+        </div>
 
-      <div class="more">
-        {
-          rest.map((entry) => (
-            <article class="project">
-              <h3>{entry.data.title}</h3>
-              <p class="project__summary">{entry.data.summary}</p>
-              {entry.data.intro && <p>{entry.data.intro}</p>}
-              <ul class="points">
-                {entry.data.highlights.map((h) => (
-                  <li>{h}</li>
-                ))}
-              </ul>
-              {entry.data.stack.length > 0 && (
-                <p class="stack">
-                  <span>Built with</span> {entry.data.stack.join(', ')}
-                </p>
+        <figure class="sketch">
+          <svg viewBox="0 0 520 340" role="img" aria-label="Sketch: careers sites feed a Next.js server, which stores jobs in PostgreSQL and notifies your phone">
+            <g class="sk-box" style="--d:200ms">
+              <rect x="10" y="22" width="190" height="72" rx="6" />
+              <text class="sk-lbl" x="105" y="55">94 careers sites</text>
+              <text class="sk-sub" x="105" y="78">Workday, Lever, …</text>
+            </g>
+            <path class="draw sk-arrow" style="--d:700ms" d="M200 58 C 250 52, 280 64, 318 112 M302 105 L319 114 L316 96" />
+            <g class="sk-box" style="--d:1100ms">
+              <rect x="300" y="116" width="205" height="76" rx="6" />
+              <text class="sk-lbl" x="402" y="150">Next.js on Render</text>
+              <text class="sk-sub" x="402" y="173">fetch · score</text>
+            </g>
+            <path class="draw sk-arrow" style="--d:1500ms" d="M300 170 C 252 192, 222 222, 198 250 M200 232 L197 252 L215 246" />
+            <g class="sk-box" style="--d:1900ms">
+              <rect x="10" y="244" width="196" height="72" rx="6" />
+              <text class="sk-lbl" x="108" y="277">PostgreSQL (Neon)</text>
+              <text class="sk-sub" x="108" y="300">jobs · applications</text>
+            </g>
+            <path class="draw sk-arrow" style="--d:2200ms" d="M422 192 C 432 222, 442 242, 446 264 M436 252 L447 266 L454 250" />
+            <g class="sk-box" style="--d:2500ms">
+              <rect x="372" y="266" width="140" height="56" rx="6" />
+              <text class="sk-lbl" x="442" y="300">your phone</text>
+            </g>
+            <g class="sk-note" style="--d:2900ms">
+              <text x="350" y="46" transform="rotate(-6 350 46)">three alarms, so</text>
+              <text x="357" y="72" transform="rotate(-6 357 72)">it’s never late ↓</text>
+            </g>
+          </svg>
+          <figcaption class="hand">how it fits together</figcaption>
+        </figure>
+      </article>
+    )
+  }
+
+  <div class="cards">
+    {
+      rest.map((p, i) => (
+        <article class="card" data-in data-tilt="6" style={`--d:${i * 150}ms;--rot:${i % 2 ? 1.4 : -1.2}deg;--from-rot:${i % 2 ? 5 : -5}deg`}>
+          <span class="tape card__tape" />
+          <h3>{p.data.title}</h3>
+          <p class="card__summary">{p.data.intro ?? p.data.summary}</p>
+          <ul class="ticks">
+            {p.data.highlights.map((h, k) => (
+              <li>
+                <svg viewBox="0 0 28 28" aria-hidden="true">
+                  <path class="draw" style={`--d:${500 + k * 160}ms;--dur:.45s`} d={tick} />
+                </svg>
+                {h}
+              </li>
+            ))}
+          </ul>
+          <ul class="chips">
+            {p.data.stack.map((t) => (
+              <li>{t}</li>
+            ))}
+          </ul>
+          {(p.data.link || p.data.repo || p.data.caseStudy) && (
+            <p class="card__links">
+              {p.data.caseStudy && <a href={pageFor(p.id)}>How I built it</a>}
+              {p.data.link && (
+                <a href={p.data.link} target="_blank" rel="noopener">
+                  Live ↗
+                </a>
               )}
-              {(entry.data.link || entry.data.repo || entry.data.caseStudy) && (
-                <p class="project__links">
-                  {entry.data.caseStudy && <a href={pageFor(entry.id)}>Read how I built it</a>}
-                  {entry.data.link && (
-                    <a href={entry.data.link} target="_blank" rel="noopener">
-                      {entry.data.linkLabel ?? 'Open the live app'}
-                    </a>
-                  )}
-                  {entry.data.repo && (
-                    <a href={entry.data.repo} target="_blank" rel="noopener">
-                      Source code
-                    </a>
-                  )}
-                </p>
+              {p.data.repo && (
+                <a href={p.data.repo} target="_blank" rel="noopener">
+                  Code ↗
+                </a>
               )}
-            </article>
-          ))
-        }
-      </div>
-    </div>
+            </p>
+          )}
+        </article>
+      ))
+    }
   </div>
-</section>
+</Page>
 
 <style>
-  .projects {
-    display: grid;
-    gap: clamp(2.5rem, 5vw, 4rem);
+  .title {
+    max-width: 16ch;
   }
 
-  h3 {
-    font-size: var(--step-3);
+  .title__hand {
+    display: inline-block;
+    color: var(--red);
+    font-size: 1.12em;
+    rotate: -2deg;
   }
 
-  /* The live project sits on the dark square. */
   .lead {
+    position: relative;
     display: grid;
-    gap: 2.25rem;
-    padding: clamp(1.5rem, 4vw, 3rem);
-    background: var(--deep);
-    color: var(--on-deep);
-    border-radius: 4px;
+    gap: 2.5rem;
+    margin-top: 3.5rem;
+    padding: clamp(1.6rem, 4vw, 2.8rem);
+    background: var(--card);
+    box-shadow:
+      0 1px 0 var(--rule),
+      0 24px 48px -26px rgba(40, 30, 10, 0.5);
   }
 
-  .lead ::selection {
-    background: var(--amber);
-    color: var(--ink);
+  @media (min-width: 62rem) {
+    .lead {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      align-items: center;
+    }
+  }
+
+  .lead__flag {
+    position: absolute;
+    top: -1.6rem;
+    right: 1.5rem;
+    font-size: 1.6rem;
+    color: var(--red);
+    rotate: 4deg;
+  }
+
+  .lead__title {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    letter-spacing: -0.035em;
+  }
+
+  .lead__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: #e3f2e8;
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  .lead__live::before {
+    content: '';
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    50% {
+      opacity: 0.3;
+      scale: 0.7;
+    }
   }
 
   .lead__summary {
-    margin-top: 0.6rem;
-    font-size: var(--step-1);
-    font-weight: 550;
-    font-stretch: 92%;
-    line-height: 1.3;
-    max-width: 30ch;
-  }
-
-  .lead__body {
-    margin-top: 1.1rem;
-    color: var(--on-deep-2);
-    max-width: 52ch;
+    margin-top: 0.9rem;
+    color: var(--ink-2);
+    font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.3rem);
+    line-height: 1.5;
   }
 
   .lead__actions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.5rem;
-    margin-top: 1.75rem;
-  }
-
-  .lead__btn {
-    --btn-bg: var(--amber);
-    --btn-edge: var(--amber);
-    --btn-fg: var(--ink);
-  }
-
-  @media (hover: hover) {
-    .lead__btn:hover {
-      --btn-bg: var(--on-deep);
-      --btn-edge: var(--on-deep);
-      --btn-fg: var(--ink);
-    }
-  }
-
-  .lead :global(:focus-visible) {
-    outline-color: var(--amber);
+    gap: 0.9rem;
+    margin-top: 1.6rem;
   }
 
   .lead__note {
     margin-top: 0.9rem;
     font-size: var(--step--1);
-    color: var(--on-deep-2);
+    color: var(--ink-3);
   }
 
-  .lead__side {
+  .ticks {
     display: grid;
-    gap: 1.5rem;
-    align-content: start;
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--rule-deep);
+    gap: 0.6rem;
+    margin-top: 1.3rem;
   }
 
-  /* The tracker stages are a real sequence, so they are drawn as one. */
-  .flow {
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--rule-deep);
-  }
-
-  .flow__label {
-    color: var(--on-deep-2);
-    font-size: var(--step--1);
-    margin-bottom: 0.9rem;
-  }
-
-  .flow__steps {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .flow__steps li {
-    flex: 1 1 6.5rem;
-    padding: 0.55rem 0.8rem;
-    border: 1px solid var(--rule-deep);
-    border-radius: 3px;
-    font-weight: 550;
-    font-stretch: 90%;
-  }
-
-  .flow__steps li:last-child {
-    background: var(--amber);
-    border-color: var(--amber);
-    color: var(--ink);
-  }
-
-  .lead .points li::before {
-    background: var(--amber);
-  }
-
-  .lead .stack span {
-    color: var(--on-deep-2);
-  }
-
-  .points {
-    display: grid;
-    gap: 0.7rem;
-  }
-
-  .points li {
+  .ticks li {
     position: relative;
-    padding-left: 1.4rem;
+    padding-left: 2rem;
+    color: var(--ink-2);
+    font-size: 0.98rem;
   }
 
-  .points li::before {
-    content: '';
+  .ticks svg {
     position: absolute;
     left: 0;
-    top: 0.62em;
-    width: 0.42rem;
-    height: 0.42rem;
-    background: var(--green);
+    top: 0.05rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    overflow: visible;
   }
 
-  .stack span {
-    color: var(--ink-2);
+  .ticks path {
+    fill: none;
+    stroke: var(--green);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
-  .more {
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 1.3rem;
+  }
+
+  .chips li {
+    padding: 0.2rem 0.65rem;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    background: var(--card);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+
+  .chips li:nth-child(odd) {
+    rotate: -1.5deg;
+  }
+
+  .chips li:nth-child(even) {
+    rotate: 1.2deg;
+  }
+
+  /* The hand-drawn system sketch. */
+  .sketch {
+    position: relative;
+    padding: 1rem;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border-radius: 4px;
+  }
+
+  .sketch svg {
+    display: block;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .sketch figcaption {
+    margin-top: 0.4rem;
+    text-align: right;
+    font-size: 1.3rem;
+    color: var(--ink-3);
+  }
+
+  .sk-box rect {
+    fill: var(--card);
+    stroke: var(--ink);
+    stroke-width: 2;
+    filter: url(#rough);
+  }
+
+  .sk-lbl {
+    font-family: var(--hand);
+    font-size: 22px;
+    font-weight: 700;
+    fill: var(--ink);
+    text-anchor: middle;
+  }
+
+  .sk-sub {
+    font-family: var(--mono);
+    font-size: 12px;
+    fill: var(--ink-3);
+    text-anchor: middle;
+  }
+
+  .sk-arrow {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .sk-note text {
+    font-family: var(--hand);
+    font-size: 22px;
+    font-weight: 700;
+    fill: var(--red);
+  }
+
+  :global(.js) .sk-box,
+  :global(.js) .sk-note {
+    opacity: 0;
+    translate: 0 10px;
+    transition:
+      opacity 500ms ease var(--d),
+      translate 700ms var(--spring) var(--d);
+  }
+
+  :global(.js) .lead:global(.in) .sk-box,
+  :global(.js) .lead:global(.in) .sk-note {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  .cards {
     display: grid;
-    gap: clamp(2.5rem, 5vw, 3.5rem);
+    gap: clamp(2rem, 4vw, 3rem);
+    margin-top: clamp(3rem, 6vw, 4.5rem);
   }
 
-  .project {
-    display: grid;
-    gap: 1.1rem;
-    align-content: start;
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--ink);
+  @media (min-width: 52rem) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
-  .project h3 {
+  .card {
+    --tx: 0deg;
+    --ty: 0deg;
+    position: relative;
+    padding: 2rem 1.7rem 1.6rem;
+    background: var(--card);
+    background-image: linear-gradient(var(--red) 0 0);
+    background-size: 100% 2px;
+    background-position: 0 4.7rem;
+    background-repeat: no-repeat;
+    box-shadow: 0 18px 36px -20px rgba(40, 30, 10, 0.45);
+    transform: perspective(900px) rotateX(var(--tx)) rotateY(var(--ty));
+    transition:
+      opacity 700ms var(--ease-out),
+      translate 900ms var(--spring),
+      rotate 900ms var(--spring),
+      transform 400ms var(--ease-out);
+  }
+
+  .card__tape {
+    top: -0.85rem;
+    left: 50%;
+    translate: -50% 0;
+    rotate: -3deg;
+  }
+
+  .card h3 {
     font-size: var(--step-2);
   }
 
-  .project__summary {
-    margin-top: -0.6rem;
-    font-weight: 550;
+  .card__summary {
+    margin-top: 1.5rem;
+    color: var(--ink-2);
   }
 
-  .project__links {
+  .card__links {
     display: flex;
-    gap: 1.5rem;
-  }
-
-  @media (min-width: 50rem) {
-    .lead {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      gap: 3rem;
-    }
-
-    .flow {
-      grid-column: 1 / -1;
-      grid-row: 2;
-    }
-
-    .lead__side {
-      padding-top: 0.4rem;
-      padding-left: 2.5rem;
-      border-top: 0;
-      border-left: 1px solid var(--rule-deep);
-    }
-
-    .more {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 3rem;
-    }
+    gap: 1.2rem;
+    margin-top: 1.2rem;
+    font-weight: 500;
   }
 </style>

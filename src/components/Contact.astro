@@ -1,236 +1,189 @@
 ---
-import { site, facts } from '../data/site';
-import Icon from './Icon.astro';
+import Page from './Page.astro';
+import { site } from '../data/site';
 import { withBase } from '../lib/url';
 
+interface Props {
+  n?: number;
+}
+const { n = 7 } = Astro.props;
 const year = new Date().getFullYear();
+const v1 = 'https://github.com/Nihanth1311/portfolio/tree/version-1';
 ---
 
-<footer class="contact" id="contact">
-  <div class="wrap">
-    <div class="contact__grid">
-    <div>
-    <h2>Hiring for a full-stack role? Write to me.</h2>
-    {site.availability && <p class="contact__lede">{site.availability}</p>}
+<Page n={n} title="say hello" id="contact" class="contact">
+  <div class="letter" data-in data-letter style="--rot:-0.6deg;--from-rot:2deg">
+    <svg class="plane" viewBox="0 0 400 160" aria-hidden="true">
+      <path class="plane__trail draw" style="--d:500ms;--dur:1.6s" d="M10 140 C 80 150, 120 60, 190 80 S 260 150, 300 90 S 360 20, 392 30" />
+      <g class="plane__body">
+        <path d="M0 0 L-26 -10 L-20 0 L-26 10 Z" />
+        <path d="M-20 0 L-26 10 L-14 4 Z" class="plane__fold" />
+      </g>
+    </svg>
 
-    <div class="contact__mail">
-      <a class="contact__address" href={`mailto:${site.email}`}>{site.email}</a>
-      <button class="btn contact__copy" type="button" data-copy={site.email}>
-        <span class="contact__icon" data-icon-copy><Icon name="copy" /></span>
-        <span class="contact__icon" data-icon-done hidden><Icon name="check" /></span>
+    <p class="letter__dear hand">Dear reader,</p>
+    <h2 class="letter__title">
+      Hiring for a full-stack role? <span class="mark">Write to me.</span>
+    </h2>
+    <p class="letter__body">{site.availability} I reply to every email, usually within a day.</p>
+
+    <div class="mail">
+      <a class="mail__address" href={`mailto:${site.email}`}>{site.email}</a>
+      <button class="btn btn--ghost mail__copy" type="button" data-copy={site.email}>
         <span data-copy-label>Copy email</span>
       </button>
-      <span class="contact__status" role="status" aria-live="polite" data-copy-status></span>
+      <span class="sr-only" role="status" aria-live="polite" data-copy-status></span>
     </div>
 
-    </div>
-
-    <div class="contact__side">
-      <dl class="contact__facts">
-        {
-          facts.map((f) => (
-            <div>
-              <dt>{f.label}</dt>
-              <dd>{f.value}</dd>
-            </div>
-          ))
-        }
-        <div>
-          <dt>Looking for</dt>
-          <dd>Full-stack engineering roles</dd>
-        </div>
-      </dl>
-
-    <ul class="contact__links">
-      <li>
-        <a href={site.linkedin} target="_blank" rel="noopener me">LinkedIn <Icon name="external" size={16} /></a>
-      </li>
-      <li>
-        <a href={site.github} target="_blank" rel="noopener me">GitHub <Icon name="external" size={16} /></a>
-      </li>
-      <li>
-        <a href={withBase(site.resume)} download={site.resumeFileName}>Download résumé <Icon name="download" size={16} /></a>
-      </li>
+    <ul class="links">
+      <li><a href={site.linkedin} target="_blank" rel="noopener me">LinkedIn ↗</a></li>
+      <li><a href={site.github} target="_blank" rel="noopener me">GitHub ↗</a></li>
+      <li><a href={withBase(site.resume)} download={site.resumeFileName}>Résumé (PDF) ↓</a></li>
     </ul>
-    </div>
-    </div>
 
-    <p class="contact__base">
-      <span>{site.name}, {site.location}</span>
-      <span>© {year}</span>
-    </p>
+    <p class="letter__sign hand">— Nihanth</p>
   </div>
-</footer>
+
+  <footer class="foot">
+    <span>{site.name} · {site.location} · © {year}</span>
+    <span>drawn &amp; coded by hand · v2 · <a href={v1} target="_blank" rel="noopener">see version 1</a></span>
+  </footer>
+</Page>
 
 <style>
-  .contact {
-    background: var(--deep);
-    color: var(--on-deep);
-    padding-block: var(--section) 2rem;
+  .letter {
+    position: relative;
+    max-width: 46rem;
+    margin: 1rem auto 0;
+    padding: clamp(2rem, 5vw, 3.4rem) clamp(1.5rem, 5vw, 3.4rem);
+    background: var(--card);
+    background-image: repeating-linear-gradient(transparent 0 2rem, #e8eef6 2rem calc(2rem + 1px));
+    background-position: 0 1.2rem;
+    box-shadow: 0 26px 50px -26px rgba(40, 30, 10, 0.5);
   }
 
-  .contact ::selection {
-    background: var(--amber);
-    color: var(--ink);
-  }
-
-  .contact :global(:focus-visible) {
-    outline-color: var(--amber);
-  }
-
-  .contact__grid {
-    display: grid;
-    gap: 3rem;
-  }
-
-  .contact__facts div {
-    display: grid;
-    grid-template-columns: 6.5rem minmax(0, 1fr);
-    gap: 1rem;
-    padding-block: 0.7rem;
-    border-top: 1px solid var(--rule-deep);
-  }
-
-  .contact__facts div:first-child {
-    border-top: 0;
-    padding-top: 0;
-  }
-
-  .contact__facts dt {
-    color: var(--on-deep-2);
-  }
-
-  .contact__facts dd {
-    font-weight: 550;
-  }
-
-  @media (min-width: 62rem) {
-    .contact__grid {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-      gap: 3.5rem;
-      align-items: end;
-    }
-  }
-
-  h2 {
-    font-size: clamp(2.4rem, 1rem + 5.2vw, 4.75rem);
-    font-weight: 700;
-    font-stretch: 76%;
-    line-height: 0.98;
-    max-width: 15ch;
-  }
-
-  .contact__lede {
-    margin-top: 1.5rem;
-    font-size: var(--step-1);
-    color: var(--on-deep-2);
-  }
-
-  .contact__mail {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.5rem;
-    margin-top: clamp(2rem, 4vw, 3rem);
-  }
-
-  .contact__address {
-    font-size: clamp(1.35rem, 0.9rem + 2vw, 2.1rem);
-    font-weight: 600;
-    font-stretch: 85%;
-    line-height: 1.2;
-    overflow-wrap: anywhere;
-    text-decoration-color: var(--amber);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.22em;
-  }
-
-  .contact__copy {
-    --btn-edge: var(--on-deep-2);
-    --btn-fg: var(--on-deep);
-  }
-
-  @media (hover: hover) {
-    .contact__copy:hover {
-      --btn-bg: var(--on-deep);
-      --btn-edge: var(--on-deep);
-      --btn-fg: var(--ink);
-    }
-  }
-
-  .contact__icon {
-    display: inline-flex;
-  }
-
-  .contact__icon[hidden] {
-    display: none;
-  }
-
-  .contact__status {
+  .plane {
     position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+    right: -2rem;
+    top: -5rem;
+    width: min(26rem, 80%);
+    overflow: visible;
+    pointer-events: none;
   }
 
-  .contact__links {
+  .plane__trail {
+    fill: none;
+    stroke: var(--ink-3);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    opacity: 0.6;
+  }
+
+  .plane__body {
+    offset-path: path('M10 140 C 80 150, 120 60, 190 80 S 260 150, 300 90 S 360 20, 392 30');
+    offset-distance: 100%;
+    offset-rotate: auto;
+  }
+
+  :global(.js) .plane__body {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+
+  :global(.js) .letter:global(.in) .plane__body {
+    animation: fly 1.6s cubic-bezier(0.65, 0, 0.35, 1) 500ms forwards;
+  }
+
+  @keyframes fly {
+    0% {
+      offset-distance: 0%;
+      opacity: 1;
+    }
+    100% {
+      offset-distance: 100%;
+      opacity: 1;
+    }
+  }
+
+  .plane__body path {
+    fill: var(--card);
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+
+  .plane__body .plane__fold {
+    fill: #e9eef7;
+  }
+
+  .letter__dear {
+    font-size: 1.9rem;
+    color: var(--blue);
+    line-height: 1;
+  }
+
+  .letter__title {
+    margin-top: 1rem;
+    max-width: 16ch;
+  }
+
+  .letter__body {
+    margin-top: 1rem;
+    color: var(--ink-2);
+    max-width: 44ch;
+  }
+
+  .mail {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 2rem;
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--rule-deep);
-  }
-
-  .contact__links a {
-    display: inline-flex;
     align-items: center;
-    gap: 0.4em;
-    padding-block: 0.5rem;
+    gap: 1rem 1.25rem;
+    margin-top: 1.8rem;
   }
 
-  .contact__base {
+  .mail__address {
+    font-family: var(--hand);
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--red);
+    overflow-wrap: anywhere;
+    line-height: 1.1;
+  }
+
+  .mail__copy:global(.is-done) {
+    --btn-fg: var(--green);
+    --btn-edge: var(--green);
+    --btn-shadow: var(--green);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.6rem;
+    margin-top: 1.6rem;
+    font-weight: 500;
+  }
+
+  .letter__sign {
+    margin-top: 2rem;
+    text-align: right;
+    font-size: 2.2rem;
+    color: var(--ink);
+    rotate: -3deg;
+  }
+
+  .foot {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 0.5rem 2rem;
-    margin-top: clamp(3rem, 6vw, 5rem);
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--rule-deep);
-    font-size: var(--step--1);
-    color: var(--on-deep-2);
+    gap: 0.5rem 1.5rem;
+    max-width: 46rem;
+    margin: 4rem auto 0;
+    padding-top: 1rem;
+    border-top: 1.5px dashed var(--rule);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--ink-3);
+    padding-bottom: 5rem;
   }
 </style>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
-    const label = button.querySelector<HTMLElement>('[data-copy-label]')!;
-    const iconCopy = button.querySelector<HTMLElement>('[data-icon-copy]')!;
-    const iconDone = button.querySelector<HTMLElement>('[data-icon-done]')!;
-    const status = button.parentElement?.querySelector<HTMLElement>('[data-copy-status]');
-    const idle = label.textContent ?? 'Copy email';
-    let timer = 0;
-
-    button.addEventListener('click', async () => {
-      const value = button.dataset.copy ?? '';
-      let ok = true;
-      try {
-        await navigator.clipboard.writeText(value);
-      } catch {
-        ok = false;
-      }
-      label.textContent = ok ? 'Copied' : 'Copy failed, select the address';
-      iconCopy.hidden = ok;
-      iconDone.hidden = !ok;
-      if (status) status.textContent = ok ? 'Email address copied' : 'Could not copy the email address';
-      window.clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        label.textContent = idle;
-        iconCopy.hidden = false;
-        iconDone.hidden = true;
-        if (status) status.textContent = '';
-      }, 2000);
-    });
-  });
-</script>
