@@ -1,55 +1,356 @@
 ---
-import { strengths } from '../data/site';
+import Page from './Page.astro';
+import { site, strengths, trace } from '../data/site';
+
+const max = Math.max(...trace.rows.map((r) => r.ms));
+const saved = max - Math.min(...trace.rows.map((r) => r.ms));
+const circles = [
+  'M24 6 C 36 5, 44 14, 43 25 C 42 37, 31 44, 21 42 C 10 40, 4 31, 6 20 C 8 11, 15 6, 26 7',
+  'M23 5 C 37 6, 45 16, 42 27 C 39 38, 28 44, 18 41 C 8 37, 4 27, 8 17 C 11 9, 18 5, 27 6',
+  'M25 6 C 35 6, 43 13, 43 24 C 43 36, 33 43, 22 42 C 11 41, 5 32, 6 21 C 7 12, 16 6, 28 8',
+];
 ---
 
-<section class="band" id="strengths">
-  <div class="wrap band__grid">
-    <div class="band__head">
-      <h2>What I’m good at</h2>
-      <p class="band__lede">Three things I’d bring to a team, each with where I’ve done it.</p>
-    </div>
+<Page n={2} title="what I’m good at" id="strengths">
+  <h2 class="title" data-in>
+    Three things I’d bring <span class="hand title__hand">to your team.</span>
+  </h2>
+  <blockquote class="motto" data-in style="--d:120ms">
+    <p class="hand">“{site.quote}”</p>
+    <svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true"><path class="draw" style="--d:500ms" d="M3 9 C 60 4, 140 12, 200 7 S 280 5, 297 9" /></svg>
+  </blockquote>
 
-    <ul class="strengths">
-      {
-        strengths.map((s) => (
-          <li>
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
-            <p class="strengths__proof">{s.proof}</p>
-          </li>
-        ))
+  <ol class="notes">
+    {
+      strengths.map((s, i) => (
+        <li class="note" data-in style={`--d:${i * 140}ms;--from-rot:${i % 2 ? 3 : -3}deg;--rot:${[-1, 0.8, -0.6][i]}deg`}>
+          <span class="note__n" aria-hidden="true">
+            <svg viewBox="0 0 48 48">
+              <path class="draw" style={`--d:${300 + i * 140}ms`} d={circles[i]} />
+            </svg>
+            <span class="hand">{i + 1}</span>
+          </span>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+          <p class="note__proof">
+            <svg viewBox="0 0 28 28" aria-hidden="true">
+              <path class="draw" style={`--d:${700 + i * 140}ms;--dur:.5s`} d="M4 15 L11 22 L25 5" />
+            </svg>
+            {s.proof}
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+
+  <figure class="chart" data-in data-chart style="--rot:-1.2deg;--from-rot:-4deg">
+    <span class="tape chart__tape"></span>
+    <figcaption>
+      <span class="tag">Event Whiz API · plays in real time</span>
+      <span class="chart__title">One request, <span class="hand">before &amp; after Redis.</span></span>
+    </figcaption>
+    {
+      trace.rows.map((row) => (
+        <div class="bar" data-kind={row.kind}>
+          <span class="bar__label hand">{row.kind === 'slow' ? 'no cache' : '+ Redis cache'}</span>
+          <svg viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true">
+            <path pathLength="1" d={`M8 15 C ${(row.ms / max) * 90} 11, ${(row.ms / max) * 200} 19, ${(row.ms / max) * 292} 14`} />
+          </svg>
+          <span class="bar__ms">
+            <span data-ms={row.ms}>{row.ms}</span> ms
+          </span>
+        </div>
+      ))
+    }
+    <div class="chart__foot">
+      <p class="chart__saved hand">↑ {saved} ms saved on every request</p>
+      <button class="chart__again" type="button" data-replay>↻ send it again</button>
+    </div>
+  </figure>
+</Page>
+
+<script>
+  // Bars fill at the real measured speed, so the difference is felt, not just read.
+  const chart = document.querySelector<HTMLElement>('[data-chart]');
+  if (chart) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const rows = [...chart.querySelectorAll<HTMLElement>('.bar')].map((row) => ({
+      path: row.querySelector('path')!,
+      out: row.querySelector<HTMLElement>('[data-ms]')!,
+      ms: Number(row.querySelector<HTMLElement>('[data-ms]')!.dataset.ms),
+    }));
+    const run = () => {
+      if (reduce) {
+        rows.forEach((r) => (r.path.style.strokeDashoffset = '0'));
+        return;
       }
-    </ul>
-  </div>
-</section>
+      const start = performance.now() + 250;
+      rows.forEach((r) => {
+        r.path.style.strokeDashoffset = '1';
+        r.out.textContent = '0';
+      });
+      const tick = (now: number) => {
+        let busy = false;
+        rows.forEach((r) => {
+          const t = Math.min(1, Math.max(0, (now - start) / r.ms));
+          r.path.style.strokeDashoffset = String(1 - t);
+          r.out.textContent = String(Math.round(t * r.ms));
+          if (t < 1) busy = true;
+        });
+        if (busy) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    chart.addEventListener('notebook:in', () => setTimeout(run, 500), { once: true });
+    chart.querySelector('[data-replay]')?.addEventListener('click', run);
+  }
+</script>
 
 <style>
-  .strengths {
+  .title {
+    max-width: 16ch;
+  }
+
+  .title__hand {
+    display: inline-block;
+    color: var(--red);
+    font-size: 1.15em;
+    rotate: -2deg;
+  }
+
+  .motto {
+    position: relative;
+    margin-top: 1.5rem;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .motto p {
+    font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+    line-height: 1.15;
+    color: var(--blue);
+  }
+
+  .motto svg {
+    display: block;
+    width: 100%;
+    height: 0.8rem;
+    overflow: visible;
+  }
+
+  .motto path {
+    fill: none;
+    stroke: var(--blue);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .notes {
     display: grid;
-    gap: 2rem;
+    gap: clamp(1.2rem, 3vw, 2rem);
+    margin-top: 3rem;
   }
 
-  li {
-    display: grid;
-    gap: 0.75rem;
-    align-content: start;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--ink);
-  }
-
-  h3 {
-    font-size: var(--step-2);
-  }
-
-  .strengths__proof {
-    color: var(--green-strong);
-    font-weight: 550;
-  }
-
-  @media (min-width: 50rem) {
-    .strengths {
+  @media (min-width: 56rem) {
+    .notes {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 2.25rem;
+    }
+  }
+
+  .note {
+    position: relative;
+    padding: 1.6rem 1.5rem 1.5rem;
+    background: var(--card);
+    box-shadow:
+      0 1px 0 var(--rule),
+      0 14px 28px -18px rgba(40, 30, 10, 0.4);
+    background-image: repeating-linear-gradient(transparent 0 1.85rem, #e8eef6 1.85rem calc(1.85rem + 1px));
+    background-position: 0 0.9rem;
+  }
+
+  .note__n {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .note__n svg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  .note__n path {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+  }
+
+  .note__n .hand {
+    font-size: 1.9rem;
+    color: var(--red);
+    line-height: 1;
+  }
+
+  .note h3 {
+    font-size: var(--step-1);
+  }
+
+  .note p {
+    margin-top: 0.6rem;
+    color: var(--ink-2);
+  }
+
+  .note__proof {
+    display: flex;
+    gap: 0.5rem;
+    font-size: var(--step--1);
+    color: var(--ink) !important;
+    font-weight: 500;
+  }
+
+  .note__proof svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    flex: none;
+    overflow: visible;
+  }
+
+  .note__proof path {
+    fill: none;
+    stroke: var(--green);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .chart {
+    position: relative;
+    margin: 4rem auto 0;
+    max-width: 40rem;
+    padding: 2rem clamp(1.2rem, 4vw, 2.2rem) 1.6rem;
+    background: var(--card);
+    box-shadow: 0 18px 36px -18px rgba(40, 30, 10, 0.45);
+  }
+
+  .chart__tape {
+    top: -0.9rem;
+    left: 50%;
+    translate: -50% 0;
+    rotate: 3deg;
+  }
+
+  .chart figcaption {
+    display: grid;
+    gap: 0.3rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .chart__title {
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .chart__title .hand {
+    color: var(--red);
+    font-size: 1.15em;
+  }
+
+  .bar {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) 4.5rem;
+    align-items: center;
+    gap: 0.8rem;
+    margin-block: 0.9rem;
+  }
+
+  .bar__label {
+    font-size: 1.45rem;
+    line-height: 1;
+  }
+
+  .bar[data-kind='slow'] {
+    --c: var(--red);
+  }
+
+  .bar[data-kind='fast'] {
+    --c: var(--green);
+  }
+
+  .bar__label {
+    color: var(--c);
+  }
+
+  .bar svg {
+    width: 100%;
+    height: 1.8rem;
+    overflow: visible;
+  }
+
+  .bar path {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 22;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    opacity: 0.82;
+  }
+
+  :global(.js) .bar path {
+    stroke-dashoffset: 1;
+  }
+
+  .bar__ms {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    text-align: right;
+  }
+
+  .chart__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem 1rem;
+    margin-top: 0.8rem;
+  }
+
+  .chart__saved {
+    font-size: 1.6rem;
+    color: var(--blue);
+  }
+
+  .chart__again {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 0.35rem 0.8rem;
+    border: 1.5px dashed var(--ink-3);
+    border-radius: 4px;
+    background: none;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: rotate 300ms var(--spring);
+  }
+
+  .chart__again:hover {
+    rotate: -3deg;
+  }
+
+  @media (max-width: 30rem) {
+    .bar {
+      grid-template-columns: 1fr 4rem;
+    }
+
+    .bar svg {
+      grid-column: 1 / -1;
+      grid-row: 2;
     }
   }
 </style>
